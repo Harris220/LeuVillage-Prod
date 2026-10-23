@@ -3,15 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://www.google.com https://maps.google.com; form-action 'self' mailto:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Salle de réunion à Saint-Leu — Leu Village, La Réunion</title>
 <meta name="description" content="Salle de réunion équipée pour 6 à 8 personnes à Saint-Leu : 30 € HT l’heure, 90 € HT la demi-journée, 180 € HT la journée. Réunions, ateliers, formations.">
+<link rel="canonical" href="https://harris220.github.io/LeuVillage-Prod/salle-de-reunion.html">
 <meta name="theme-color" content="#fcf0e4">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="Leu Village">
 <meta property="og:title" content="Salle de réunion à Saint-Leu — Leu Village, La Réunion">
 <meta property="og:description" content="Salle de réunion équipée pour 6 à 8 personnes à Saint-Leu : 30 € HT l’heure, 90 € HT la demi-journée, 180 € HT la journée. Réunions, ateliers, formations.">
-<meta property="og:image" content="images/vue-mer-balcon-1280.webp">
+<meta property="og:url" content="https://harris220.github.io/LeuVillage-Prod/salle-de-reunion.html">
+<meta property="og:image" content="https://harris220.github.io/LeuVillage-Prod/images/og-leu-village.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vue sur l’océan et les pentes de Saint-Leu depuis la Pointe des Châteaux">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/img/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="assets/img/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -19,7 +27,6 @@
 <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
 
 <link rel="stylesheet" href="assets/css/main.css">
-<script src="assets/js/vendor/lenis.min.js" defer></script>
 <script src="assets/js/main.js" defer></script>
 
 </head>
@@ -38,7 +45,7 @@
       <ul>
         <li><a href="coworking.html">Coworking</a></li>
         <li><a href="salle-de-reunion.html" aria-current="page">Salle de réunion</a></li>
-        <li><a href="meubles.html">Les meublés</a></li>
+        <li><a href="meubles.html">Meublés</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </nav>
@@ -49,24 +56,21 @@
     </div>
   </div>
 </header>
-<div class="mobile-menu" id="mobile-menu" data-lenis-prevent>
+<div class="mobile-menu" id="mobile-menu">
   <nav class="mobile-menu__nav" aria-label="Menu principal">
     <ul>
-      <li><a href="index.html" style="--i:0"><small>01</small>Accueil</a></li>
-      <li><a href="coworking.html" style="--i:1"><small>02</small>Coworking</a></li>
-      <li><a href="salle-de-reunion.html" style="--i:2" aria-current="page"><small>03</small>Salle de réunion</a></li>
-      <li><a href="meubles.html" style="--i:3"><small>04</small>Les meublés</a></li>
-      <li><a href="contact.html" style="--i:4"><small>05</small>Contact</a></li>
-      <li><a href="reserver.html" style="--i:5"><small>06</small>Réserver</a></li>
+      <li><a class="d-0" href="index.html"><small>01</small>Accueil</a></li>
+      <li class="mobile-menu__group"><p class="mobile-menu__title">Travailler</p><ul><li><a class="d-1" href="coworking.html"><small>02</small>Coworking</a></li><li><a class="d-2" href="salle-de-reunion.html" aria-current="page"><small>03</small>Salle de réunion</a></li></ul></li>
+      <li class="mobile-menu__group"><p class="mobile-menu__title">Séjourner</p><ul><li><a class="d-3" href="meubles.html"><small>04</small>Les meublés</a></li></ul></li>
+      <li class="mobile-menu__group"><p class="mobile-menu__title">Infos</p><ul><li><a class="d-4" href="contact.html"><small>05</small>Contact</a></li><li><a class="d-5" href="reserver.html"><small>06</small>Réserver</a></li></ul></li>
     </ul>
   </nav>
   <div class="mobile-menu__foot">
     <div class="mobile-menu__contact">
       <a href="tel:+262693025757"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+262 693 02 57 57</a>
       <a href="mailto:contact@leuvillage.re"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>contact@leuvillage.re</a>
-      <p class="status" data-status><span class="status__dot"></span><span data-status-text>Accès libre · lun – ven, 7h – 18h</span></p>
     </div>
-    <a class="btn btn--primary" href="reserver.html" aria-label="Réserver maintenant"><span class="btn__label"><span class="btn__text" data-label="Réserver maintenant">Réserver maintenant</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a>
+    <a class="btn btn--primary" href="reserver.html" aria-label="Réserver"><span class="btn__label"><span class="btn__text" data-label="Réserver">Réserver</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a>
   </div>
 </div>
 <main id="main" tabindex="-1">
@@ -75,19 +79,19 @@
 <section class="page-hero intro" aria-labelledby="page-titre">
   <div class="container page-hero__grid">
     <div class="page-hero__text">
-      <nav aria-label="Fil d’Ariane" data-intro style="--i:0"><ol class="breadcrumb"><li><a href="index.html">Accueil</a></li><li aria-current="page">Salle de réunion</li></ol></nav>
-      <p class="eyebrow" data-intro style="--i:0"><span class="eyebrow__num">01</span>Salle de réunion · Saint-Leu</p>
+      <nav class="d-0" aria-label="Fil d’Ariane" data-intro><ol class="breadcrumb"><li><a href="index.html">Accueil</a></li><li aria-current="page">Salle de réunion</li></ol></nav>
+      <p class="eyebrow d-0" data-intro><span class="eyebrow__num">01</span>Salle de réunion · Saint-Leu</p>
       <h1 class="page-hero__title" id="page-titre">
-        <span class="line"><span style="--i:0">Des réunions</span></span>
-        <span class="line"><span style="--i:1"><em class="accent">qui respirent.</em></span></span>
+        <span class="line"><span class="d-0">Des réunions</span></span>
+        <span class="line"><span class="d-1"><em class="accent">qui respirent.</em></span></span>
       </h1>
-      <p class="lead" data-intro style="--i:1">Réunions, ateliers, formations, rendez-vous professionnels ou visioconférences : une salle équipée pour 6 à 8 personnes, dans un cadre agréable à Saint-Leu.</p>
-      <div class="btn-row" data-intro style="--i:2"><a class="btn btn--primary" href="reserver.html?offre=salle" aria-label="Réserver la salle" data-magnetic><span class="btn__label"><span class="btn__text" data-label="Réserver la salle">Réserver la salle</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a><a class="btn btn--ghost" href="#tarifs" aria-label="Voir les tarifs"><span class="btn__label"><span class="btn__text" data-label="Voir les tarifs">Voir les tarifs</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></span></a></div>
-      <div class="chips page-hero__facts" data-intro style="--i:3"><span class="chip"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>6 à 8 personnes</span><span class="chip"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>À l’heure ou à la journée</span><span class="chip"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>Parking privé</span></div>
+      <p class="lead d-1" data-intro>Réunions, ateliers, formations, rendez-vous professionnels ou visioconférences : une salle équipée pour 6 à 8 personnes, dans un cadre agréable à Saint-Leu.</p>
+      <div class="btn-row d-2" data-intro><a class="btn btn--primary" href="reserver.html?offre=salle" aria-label="Réserver la salle" data-magnetic><span class="btn__label"><span class="btn__text" data-label="Réserver la salle">Réserver la salle</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a><a class="btn btn--ghost" href="#tarifs" aria-label="Voir les tarifs"><span class="btn__label"><span class="btn__text" data-label="Voir les tarifs">Voir les tarifs</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></span></a></div>
+      <div class="chips page-hero__facts d-3" data-intro><span class="chip"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>6 à 8 personnes</span><span class="chip"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>À l’heure ou à la journée</span><span class="chip"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>Parking privé</span></div>
     </div>
     <div class="page-hero__media">
-      <div class="page-hero__frame" data-intro-img style="--i:1"><picture><source type="image/avif" srcset="images/coworking-reunion-480.avif 480w, images/coworking-reunion-800.avif 800w, images/coworking-reunion-1024.avif 1024w" sizes="(min-width: 900px) 44vw, 92vw"><source type="image/webp" srcset="images/coworking-reunion-480.webp 480w, images/coworking-reunion-800.webp 800w, images/coworking-reunion-1024.webp 1024w" sizes="(min-width: 900px) 44vw, 92vw"><img src="images/coworking-reunion-800.webp" width="1024" height="1024" alt="Petite équipe en réunion autour d’une grande table en bois, ordinateurs ouverts" fetchpriority="high" decoding="async"></picture></div>
-      <p class="page-hero__tag" data-intro style="--i:4"><strong>30 € HT</strong><span>l’heure de réunion</span></p>
+      <div class="page-hero__frame d-1" data-intro-img><picture><source type="image/avif" srcset="images/coworking-reunion-480.avif 480w, images/coworking-reunion-800.avif 800w, images/coworking-reunion-1024.avif 1024w" sizes="(min-width: 900px) 44vw, 92vw"><source type="image/webp" srcset="images/coworking-reunion-480.webp 480w, images/coworking-reunion-800.webp 800w, images/coworking-reunion-1024.webp 1024w" sizes="(min-width: 900px) 44vw, 92vw"><img src="images/coworking-reunion-800.webp" width="1024" height="1024" alt="Image d’illustration : petite équipe en réunion autour d’une grande table en bois, ordinateurs ouverts" fetchpriority="high" decoding="async"></picture><span class="media-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Image d’illustration</span></div>
+      <p class="page-hero__tag d-4" data-intro><strong>30 € HT</strong><span>l’heure de réunion</span></p>
       
 <div class="badge-spin" aria-hidden="true">
   <svg viewBox="0 0 120 120"><defs><path id="badge-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs><text><textPath href="#badge-circle" textLength="286" lengthAdjust="spacing">Leu Village • Saint-Leu • La Réunion •</textPath></text></svg>
@@ -100,7 +104,7 @@
 <section class="section" aria-labelledby="usages-titre">
   <div class="container">
     <div class="section-head section-head--split">
-      <div class="stack" style="--stack:1.4rem">
+      <div class="stack stack--md">
         <div data-reveal><p class="eyebrow"><span class="eyebrow__num">02</span>Pour quoi faire ?</p></div>
         <h2 class="h2 section-head__title" id="usages-titre" data-split>Un lieu pour <em class="accent">chaque format</em></h2>
       </div>
@@ -115,7 +119,7 @@
 <section class="section section--sand" id="tarifs" aria-labelledby="tarifs-titre">
   <div class="container">
     <div class="calc" data-calc data-reveal>
-      <div class="stack" style="--stack:1.4rem">
+      <div class="stack stack--md">
         <p class="eyebrow"><span class="eyebrow__num">03</span>Tarifs</p>
         <h2 class="h2" id="tarifs-titre">Choisissez <em class="accent">votre durée</em></h2>
         <fieldset class="fieldset">
@@ -138,7 +142,7 @@
 
 <section class="section" aria-labelledby="inclus-titre">
   <div class="container split">
-    <div class="stack" style="--stack:1.5rem">
+    <div class="stack stack--md">
       <div data-reveal><p class="eyebrow"><span class="eyebrow__num">04</span>Sur place</p></div>
       <h2 class="h2" id="inclus-titre" data-split>Tout pour <em class="accent">bien se réunir</em></h2>
       <p class="lead" data-reveal>Un cadre agréable et équipé, au cœur d’un espace de coworking qui vous offre aussi la cuisine, le café et la terrasse pour les pauses.</p>
@@ -153,7 +157,8 @@
       <div class="note-box" data-reveal><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg><p>Vous êtes en <strong>bureau fixe</strong> ? 2 heures de salle de réunion par mois sont incluses dans votre formule. <a class="link" href="coworking.html#formules">Voir la formule</a></p></div>
     </div>
     <div class="frame frame--tall parallax-wrap" data-reveal-img>
-      <picture data-parallax="0.08"><source type="image/avif" srcset="images/coworking-terrasse-480.avif 480w, images/coworking-terrasse-800.avif 800w, images/coworking-terrasse-1024.avif 1024w" sizes="(min-width: 900px) 46vw, 100vw"><source type="image/webp" srcset="images/coworking-terrasse-480.webp 480w, images/coworking-terrasse-800.webp 800w, images/coworking-terrasse-1024.webp 1024w" sizes="(min-width: 900px) 46vw, 100vw"><img src="images/coworking-terrasse-800.webp" width="1024" height="1024" alt="Terrasse en bois avec salon d’extérieur, palmiers et vue sur l’océan" loading="lazy" decoding="async" class="fade-img"></picture>
+      <picture data-parallax="0.08"><source type="image/avif" srcset="images/coworking-terrasse-480.avif 480w, images/coworking-terrasse-800.avif 800w, images/coworking-terrasse-1024.avif 1024w" sizes="(min-width: 900px) 46vw, 100vw"><source type="image/webp" srcset="images/coworking-terrasse-480.webp 480w, images/coworking-terrasse-800.webp 800w, images/coworking-terrasse-1024.webp 1024w" sizes="(min-width: 900px) 46vw, 100vw"><img src="images/coworking-terrasse-800.webp" width="1024" height="1024" alt="Image d’illustration : terrasse en bois avec salon d’extérieur, palmiers et vue sur l’océan" loading="lazy" decoding="async" class="fade-img"></picture>
+      <span class="media-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Image d’illustration</span>
     </div>
   </div>
 </section>
@@ -190,13 +195,12 @@
 
 <section class="section section--tight">
   <div class="container">
-    <div class="cta-card" data-reveal-img style="--reveal-r: var(--r-xl)">
-      <div class="cta-card__media parallax-wrap"><picture data-parallax="0.12"><source type="image/avif" srcset="images/bougainvillier-bougainvillee-480.avif 480w, images/bougainvillier-bougainvillee-800.avif 800w, images/bougainvillier-bougainvillee-1280.avif 1280w, images/bougainvillier-bougainvillee-1600.avif 1600w" sizes="(min-width: 1360px) 1360px, 100vw"><source type="image/webp" srcset="images/bougainvillier-bougainvillee-480.webp 480w, images/bougainvillier-bougainvillee-800.webp 800w, images/bougainvillier-bougainvillee-1280.webp 1280w, images/bougainvillier-bougainvillee-1600.webp 1600w" sizes="(min-width: 1360px) 1360px, 100vw"><img src="images/bougainvillier-bougainvillee-800.webp" width="2560" height="1707" alt="Bougainvillier en fleurs au-dessus d’une terrasse en bois" loading="lazy" decoding="async" class="fade-img"></picture></div>
-      <div class="cta-card__inner">
-        <h2 class="cta-card__title" data-split>Votre prochaine réunion, <em class="accent">côté soleil</em>.</h2>
-        <p class="lead" data-reveal>Réservez la salle à l’heure, à la demi-journée ou à la journée : nous revenons vers vous pour confirmer votre créneau.</p>
-        <div class="btn-row" data-reveal style="--i:1"><a class="btn btn--light" href="reserver.html?offre=salle" aria-label="Réserver la salle" data-magnetic><span class="btn__label"><span class="btn__text" data-label="Réserver la salle">Réserver la salle</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a><a class="btn btn--glass" href="tel:+262693025757" aria-label="Nous appeler au +262 693 02 57 57"><span class="btn__label"><span class="btn__text" data-label="Nous appeler">Nous appeler</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span></a></div>
+    <div class="cta-band on-night" data-reveal>
+      <div class="cta-band__text">
+        <h2 class="cta-band__title" data-split>Votre prochaine réunion, <em class="accent">côté soleil</em>.</h2>
+        <p class="lead">À l’heure, à la demi-journée ou à la journée. La réservation en ligne arrive bientôt : en attendant, appelez-nous pour réserver votre créneau.</p>
       </div>
+      <div class="btn-row"><a class="btn btn--light" href="reserver.html?offre=salle" aria-label="Réserver la salle" data-magnetic><span class="btn__label"><span class="btn__text" data-label="Réserver la salle">Réserver la salle</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a><a class="btn btn--glass" href="tel:+262693025757" aria-label="Nous appeler au +262 693 02 57 57"><span class="btn__label"><span class="btn__text" data-label="Nous appeler">Nous appeler</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span></a></div>
     </div>
   </div>
 </section>
@@ -210,36 +214,33 @@
         <source type="image/webp" srcset="assets/img/logo-leu-village-carre-240.webp 240w, assets/img/logo-leu-village-carre-480.webp 480w" sizes="104px">
         <img src="assets/img/logo-leu-village-carre-240.jpg" width="240" height="240" alt="Leu Village, coworking et locations à Saint-Leu" loading="lazy" decoding="async">
       </picture>
-      <p class="site-footer__tagline">Travailler au soleil, <em>séjourner sur place.</em></p>
-      <div class="btn-row"><a class="btn btn--light btn--sm" href="reserver.html" aria-label="Réserver"><span class="btn__label"><span class="btn__text" data-label="Réserver">Réserver</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a></div>
+      <p class="site-footer__tagline">Un lieu, <em>deux expériences.</em></p>
     </div>
-    <nav aria-labelledby="footer-explorer">
-      <h2 id="footer-explorer">Explorer</h2>
+    <nav aria-labelledby="footer-travailler">
+      <h2 id="footer-travailler">Travailler</h2>
       <ul class="site-footer__list">
-        <li><a href="index.html">Accueil</a></li>
         <li><a href="coworking.html">Coworking</a></li>
+        <li><a href="coworking.html#formules">Formules &amp; tarifs</a></li>
         <li><a href="salle-de-reunion.html">Salle de réunion</a></li>
+        <li><a href="reserver.html?offre=coworking">Réserver un poste</a></li>
+      </ul>
+    </nav>
+    <nav aria-labelledby="footer-sejourner">
+      <h2 id="footer-sejourner">Séjourner</h2>
+      <ul class="site-footer__list">
         <li><a href="meubles.html">Les meublés</a></li>
-        <li><a href="reserver.html">Réserver</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="meubles.html#chambres">Chambres du Village</a></li>
+        <li><a href="meubles.html#questions">Questions fréquentes</a></li>
+        <li><a href="https://www.leuboucan.re/" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>Réserver sur Leu Boucan<span class="sr-only"> (nouvel onglet)</span></a></li>
       </ul>
     </nav>
     <div>
-      <h2>Nous trouver</h2>
+      <h2>Contact</h2>
       <ul class="site-footer__list">
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><span>Pointe des Châteaux<br>97436 Saint-Leu, La Réunion</span></a></li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><span>Pointe des Châteaux<br>97436 Saint-Leu, La Réunion<span class="sr-only"> (itinéraire, nouvel onglet)</span></span></a></li>
         <li><a href="tel:+262693025757"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+262 693 02 57 57</a></li>
         <li><a href="mailto:contact@leuvillage.re"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>contact@leuvillage.re</a></li>
-      </ul>
-    </div>
-    <div>
-      <h2>Horaires</h2>
-      <ul class="site-footer__list">
-        <li>Accès libre du lundi au vendredi</li>
-        <li><strong>7h – 18h</strong></li>
-        <li><p class="status" data-status><span class="status__dot"></span><span data-status-text>Coworking ouvert en semaine</span></p></li>
-        <li>Chambres : à la nuit, à la semaine ou au mois</li>
-        <li><a href="https://www.leuboucan.re/" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>Locations Leu Boucan</a></li>
+        <li>Coworking : lun – ven, 7h – 18h</li>
       </ul>
     </div>
   </div>

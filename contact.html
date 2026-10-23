@@ -3,15 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Contact — Leu Village, coworking à Saint-Leu</title>
-<meta name="description" content="Contactez Leu Village, coworking et chambres à la Pointe des Châteaux, Saint-Leu : +262 693 02 57 57, contact@leuvillage.re. Accès libre du lundi au vendredi, 7h – 18h.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://www.google.com https://maps.google.com; form-action 'self' mailto:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Contact — Leu Village, coworking & séjours à Saint-Leu</title>
+<meta name="description" content="Contactez Leu Village à la Pointe des Châteaux, Saint-Leu : +262 693 02 57 57, contact@leuvillage.re. Coworking en accès libre du lundi au vendredi, 7h – 18h.">
+<link rel="canonical" href="https://harris220.github.io/LeuVillage-Prod/contact.html">
 <meta name="theme-color" content="#fcf0e4">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="Leu Village">
-<meta property="og:title" content="Contact — Leu Village, coworking à Saint-Leu">
-<meta property="og:description" content="Contactez Leu Village, coworking et chambres à la Pointe des Châteaux, Saint-Leu : +262 693 02 57 57, contact@leuvillage.re. Accès libre du lundi au vendredi, 7h – 18h.">
-<meta property="og:image" content="images/vue-mer-balcon-1280.webp">
+<meta property="og:title" content="Contact — Leu Village, coworking &amp; séjours à Saint-Leu">
+<meta property="og:description" content="Contactez Leu Village à la Pointe des Châteaux, Saint-Leu : +262 693 02 57 57, contact@leuvillage.re. Coworking en accès libre du lundi au vendredi, 7h – 18h.">
+<meta property="og:url" content="https://harris220.github.io/LeuVillage-Prod/contact.html">
+<meta property="og:image" content="https://harris220.github.io/LeuVillage-Prod/images/og-leu-village.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vue sur l’océan et les pentes de Saint-Leu depuis la Pointe des Châteaux">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/img/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="assets/img/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -19,8 +27,10 @@
 <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
 
 <link rel="stylesheet" href="assets/css/main.css">
-<script src="assets/js/vendor/lenis.min.js" defer></script>
 <script src="assets/js/main.js" defer></script>
+<script src="assets/js/config.js" defer></script>
+<script src="assets/js/request.js" defer></script>
+<script src="assets/js/forms.js" defer></script>
 
 </head>
 <body id="top">
@@ -38,7 +48,7 @@
       <ul>
         <li><a href="coworking.html">Coworking</a></li>
         <li><a href="salle-de-reunion.html">Salle de réunion</a></li>
-        <li><a href="meubles.html">Les meublés</a></li>
+        <li><a href="meubles.html">Meublés</a></li>
         <li><a href="contact.html" aria-current="page">Contact</a></li>
       </ul>
     </nav>
@@ -49,76 +59,73 @@
     </div>
   </div>
 </header>
-<div class="mobile-menu" id="mobile-menu" data-lenis-prevent>
+<div class="mobile-menu" id="mobile-menu">
   <nav class="mobile-menu__nav" aria-label="Menu principal">
     <ul>
-      <li><a href="index.html" style="--i:0"><small>01</small>Accueil</a></li>
-      <li><a href="coworking.html" style="--i:1"><small>02</small>Coworking</a></li>
-      <li><a href="salle-de-reunion.html" style="--i:2"><small>03</small>Salle de réunion</a></li>
-      <li><a href="meubles.html" style="--i:3"><small>04</small>Les meublés</a></li>
-      <li><a href="contact.html" style="--i:4" aria-current="page"><small>05</small>Contact</a></li>
-      <li><a href="reserver.html" style="--i:5"><small>06</small>Réserver</a></li>
+      <li><a class="d-0" href="index.html"><small>01</small>Accueil</a></li>
+      <li class="mobile-menu__group"><p class="mobile-menu__title">Travailler</p><ul><li><a class="d-1" href="coworking.html"><small>02</small>Coworking</a></li><li><a class="d-2" href="salle-de-reunion.html"><small>03</small>Salle de réunion</a></li></ul></li>
+      <li class="mobile-menu__group"><p class="mobile-menu__title">Séjourner</p><ul><li><a class="d-3" href="meubles.html"><small>04</small>Les meublés</a></li></ul></li>
+      <li class="mobile-menu__group"><p class="mobile-menu__title">Infos</p><ul><li><a class="d-4" href="contact.html" aria-current="page"><small>05</small>Contact</a></li><li><a class="d-5" href="reserver.html"><small>06</small>Réserver</a></li></ul></li>
     </ul>
   </nav>
   <div class="mobile-menu__foot">
     <div class="mobile-menu__contact">
       <a href="tel:+262693025757"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+262 693 02 57 57</a>
       <a href="mailto:contact@leuvillage.re"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>contact@leuvillage.re</a>
-      <p class="status" data-status><span class="status__dot"></span><span data-status-text>Accès libre · lun – ven, 7h – 18h</span></p>
     </div>
-    <a class="btn btn--primary" href="reserver.html" aria-label="Réserver maintenant"><span class="btn__label"><span class="btn__text" data-label="Réserver maintenant">Réserver maintenant</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a>
+    <a class="btn btn--primary" href="reserver.html" aria-label="Réserver"><span class="btn__label"><span class="btn__text" data-label="Réserver">Réserver</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a>
   </div>
 </div>
 <main id="main" tabindex="-1">
 
 <section class="page-hero intro" aria-labelledby="page-titre">
   <div class="container">
-    <nav aria-label="Fil d’Ariane" data-intro style="--i:0"><ol class="breadcrumb"><li><a href="index.html">Accueil</a></li><li aria-current="page">Contact</li></ol></nav>
-    <div class="contact-grid" style="margin-top:1.5rem">
-      <div class="stack" style="--stack:1.5rem">
-        <p class="eyebrow" data-intro style="--i:0"><span class="eyebrow__num">01</span>Contact</p>
+    <nav class="d-0" aria-label="Fil d’Ariane" data-intro><ol class="breadcrumb"><li><a href="index.html">Accueil</a></li><li aria-current="page">Contact</li></ol></nav>
+    <div class="contact-grid">
+      <div class="stack stack--md">
+        <p class="eyebrow d-0" data-intro><span class="eyebrow__num">01</span>Contact</p>
         <h1 class="page-hero__title" id="page-titre">
-          <span class="line"><span style="--i:0">Parlons de</span></span>
-          <span class="line"><span style="--i:1"><em class="accent">votre projet.</em></span></span>
+          <span class="line"><span class="d-0">Parlons de</span></span>
+          <span class="line"><span class="d-1"><em class="accent">votre projet.</em></span></span>
         </h1>
-        <p class="lead" data-intro style="--i:1">Une question sur les formules, l’espace ou un séjour à organiser ? Écrivez-nous ou appelez-nous, nous vous répondons avec plaisir.</p>
-        <div class="contact-cards" data-intro style="--i:2">
-          <a class="contact-card" href="tel:+262693025757"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span><span class="contact-card__label">Téléphone</span><span class="contact-card__value">+262 693 02 57 57</span></span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
-          <a class="contact-card" href="mailto:contact@leuvillage.re"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span><span><span class="contact-card__label">E-mail</span><span class="contact-card__value">contact@leuvillage.re</span></span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
-          <a class="contact-card" href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span><span><span class="contact-card__label">Adresse · itinéraire</span><span class="contact-card__value">Pointe des Châteaux, 97436 Saint-Leu, La Réunion</span></span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-          <div class="contact-card"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span><span><span class="contact-card__label">Horaires du coworking</span><span class="contact-card__value">Lun – ven · 7h – 18h</span><span class="status" data-status style="margin-top:.35rem"><span class="status__dot"></span><span data-status-text>Accès libre en semaine</span></span></span></div>
-        </div>
-        <p class="muted small" data-intro style="--i:3">Pour les locations Leu Boucan : réservation en ligne sur <a class="link" href="https://www.leuboucan.re/" target="_blank" rel="noopener">leuboucan.re</a> ou au <a class="link" href="tel:+262692706562">+262 692 70 65 62</a>.</p>
+        <p class="lead d-1" data-intro>Une question sur le coworking, la salle de réunion ou un séjour ? Écrivez-nous ou appelez-nous, nous vous répondons avec plaisir.</p>
+        <ul class="contact-cards d-2" data-intro>
+          <li><a class="contact-card" href="tel:+262693025757"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span><span class="contact-card__label">Téléphone</span><span class="contact-card__value">+262 693 02 57 57</span></span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>
+          <li><a class="contact-card" href="mailto:contact@leuvillage.re"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span><span><span class="contact-card__label">E-mail</span><span class="contact-card__value">contact@leuvillage.re</span></span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>
+          <li><a class="contact-card" href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener noreferrer"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span><span><span class="contact-card__label">Adresse · itinéraire<span class="sr-only"> (nouvel onglet)</span></span><span class="contact-card__value">Pointe des Châteaux, 97436 Saint-Leu, La Réunion</span></span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
+          <li><div class="contact-card"><span class="contact-card__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span><span><span class="contact-card__label">Horaires du coworking</span><span class="contact-card__value">Lun – ven · 7h – 18h</span><span class="status" data-status><span class="status__dot"></span><span data-status-text>Accès libre en semaine</span></span></span></div></li>
+        </ul>
+        <p class="muted small d-3" data-intro>Pour les locations Leu Boucan : réservation en ligne sur <a class="link" href="https://www.leuboucan.re/" target="_blank" rel="noopener noreferrer">leuboucan.re<span class="sr-only"> (nouvel onglet)</span></a> ou au <a class="link" href="tel:+262692706562">+262 692 70 65 62</a>.</p>
       </div>
-      <div class="form-card" data-intro style="--i:2">
-        <form class="form" action="/api/contact" method="post" novalidate data-demo="true" data-contact-form aria-label="Formulaire de contact">
+      <div class="form-card d-2" data-intro>
+        <form class="form" action="mailto:contact@leuvillage.re" method="post" enctype="text/plain" novalidate data-request="contact" data-contact-form aria-label="Formulaire de contact">
           <div class="form-alert" tabindex="-1" role="alert"><strong>Il manque quelques informations :</strong><ul></ul></div>
           <div class="fields">
             
 <div class="field" data-field>
   <label for="ct-prenom">Prénom <span class="req" aria-hidden="true">*</span></label>
-  <input class="input" id="ct-prenom" name="prenom" type="text" required autocomplete="given-name" aria-describedby="ct-prenom-err">
+  <input class="input" id="ct-prenom" name="prenom" type="text" required maxlength="80" autocomplete="given-name" aria-describedby="ct-prenom-err">
   
   <p class="field__error" id="ct-prenom-err"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span></span></p>
 </div>
             
 <div class="field" data-field>
   <label for="ct-nom">Nom <span class="req" aria-hidden="true">*</span></label>
-  <input class="input" id="ct-nom" name="nom" type="text" required autocomplete="family-name" aria-describedby="ct-nom-err">
+  <input class="input" id="ct-nom" name="nom" type="text" required maxlength="80" autocomplete="family-name" aria-describedby="ct-nom-err">
   
   <p class="field__error" id="ct-nom-err"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span></span></p>
 </div>
             
 <div class="field" data-field>
   <label for="ct-email">E-mail <span class="req" aria-hidden="true">*</span></label>
-  <input class="input" id="ct-email" name="email" type="email" required autocomplete="email" aria-describedby="ct-email-err" inputmode="email">
+  <input class="input" id="ct-email" name="email" type="email" required maxlength="254" autocomplete="email" aria-describedby="ct-email-err" inputmode="email">
   
   <p class="field__error" id="ct-email-err"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span></span></p>
 </div>
             
 <div class="field" data-field>
   <label for="ct-tel">Téléphone <span class="opt">(facultatif)</span></label>
-  <input class="input" id="ct-tel" name="telephone" type="tel" autocomplete="tel" aria-describedby="ct-tel-err" inputmode="tel">
+  <input class="input" id="ct-tel" name="telephone" type="tel" maxlength="30" autocomplete="tel" aria-describedby="ct-tel-err" inputmode="tel">
   
   <p class="field__error" id="ct-tel-err"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span></span></p>
 </div>
@@ -137,16 +144,17 @@
             
 <div class="field field--full" data-field>
   <label for="ct-message">Message <span class="req" aria-hidden="true">*</span></label>
-  <textarea class="textarea" id="ct-message" name="message" required placeholder="Dites-nous en quelques mots ce dont vous avez besoin…" aria-describedby="ct-message-err"></textarea>
+  <textarea class="textarea" id="ct-message" name="message" required maxlength="1000" placeholder="Dites-nous en quelques mots ce dont vous avez besoin…" aria-describedby="ct-message-err"></textarea>
   <p class="field__error" id="ct-message-err"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span></span></p>
 </div>
           </div>
           
-<div class="field" data-field>
-  <label class="check" for="ct-consent"><input id="ct-consent" name="consentement" type="checkbox" value="oui" required aria-describedby="ct-consent-err"><span>J’accepte que mes données soient utilisées pour traiter ma demande. <span class="req" aria-hidden="true">*</span></span></label>
+<div class="field" data-field data-error-label="Consentement">
+  <label class="check" for="ct-consent"><input id="ct-consent" name="consentement" type="checkbox" value="oui" required aria-describedby="ct-consent-err"><span>J’accepte que Leu Village utilise ces informations pour répondre à ma demande. <span class="req" aria-hidden="true">*</span></span></label>
   <p class="field__error" id="ct-consent-err"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span></span></p>
 </div>
-          <div class="btn-row"><button class="btn btn--primary" type="submit" aria-label="Envoyer le message"><span class="btn__label"><span class="btn__text" data-label="Envoyer le message">Envoyer le message</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></button></div>
+          <div class="btn-row"><button class="btn btn--primary" type="submit" aria-label="Préparer mon message"><span class="btn__label"><span class="btn__text" data-label="Préparer mon message">Préparer mon message</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span></button></div>
+          <p class="form-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Rien n’est enregistré sur ce site : votre demande est préparée dans votre navigateur puis envoyée depuis votre propre messagerie.</span></p>
         </form>
       </div>
     </div>
@@ -161,14 +169,34 @@
         <span class="map__pin"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>
         <p class="h4">Pointe des Châteaux · Saint-Leu</p>
         <p class="muted small">La carte est chargée depuis Google Maps uniquement si vous le demandez.</p>
-        <div class="btn-row" style="justify-content:center">
+        <div class="btn-row btn-row--center">
           <button class="btn btn--dark btn--sm" type="button" aria-label="Afficher la carte" data-map-load><span class="btn__label"><span class="btn__text" data-label="Afficher la carte">Afficher la carte</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span></button>
-          <a class="link" href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener">Ouvrir dans Maps <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+          <a class="link" href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg><span class="sr-only"> (nouvel onglet)</span></a>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<template id="tpl-request">
+  <div class="request-panel" tabindex="-1">
+    <span class="success__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span>
+    <h2 class="h3 request-panel__title"></h2>
+    <p class="lead request-panel__text"></p>
+    <dl class="summary__rows request-panel__rows"></dl>
+    <div class="btn-row request-panel__actions">
+      <a class="btn btn--primary" href="mailto:contact@leuvillage.re" aria-label="Ouvrir ma messagerie" data-request-mail><span class="btn__label"><span class="btn__text" data-label="Ouvrir ma messagerie">Ouvrir ma messagerie</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span></a>
+      <button class="btn btn--ghost" type="button" aria-label="Copier la demande" data-request-copy><span class="btn__label"><span class="btn__text" data-label="Copier la demande">Copier la demande</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span></button>
+    </div>
+    <p class="request-panel__status" role="status" aria-live="polite"></p>
+    <details class="more">
+      <summary>Voir le texte de la demande <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <pre class="request-text"></pre>
+    </details>
+    <p class="request-panel__alt">Pas de messagerie sur cet appareil ? Appelez-nous au <a class="link" href="tel:+262693025757">+262 693 02 57 57</a> ou écrivez à <a class="link" href="mailto:contact@leuvillage.re">contact@leuvillage.re</a>.</p>
+    <button class="link request-panel__edit" type="button" data-request-edit><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>Modifier ma demande</button>
+  </div>
+</template>
 </main>
 
 <footer class="site-footer on-night">
@@ -178,36 +206,33 @@
         <source type="image/webp" srcset="assets/img/logo-leu-village-carre-240.webp 240w, assets/img/logo-leu-village-carre-480.webp 480w" sizes="104px">
         <img src="assets/img/logo-leu-village-carre-240.jpg" width="240" height="240" alt="Leu Village, coworking et locations à Saint-Leu" loading="lazy" decoding="async">
       </picture>
-      <p class="site-footer__tagline">Travailler au soleil, <em>séjourner sur place.</em></p>
-      <div class="btn-row"><a class="btn btn--light btn--sm" href="reserver.html" aria-label="Réserver"><span class="btn__label"><span class="btn__text" data-label="Réserver">Réserver</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a></div>
+      <p class="site-footer__tagline">Un lieu, <em>deux expériences.</em></p>
     </div>
-    <nav aria-labelledby="footer-explorer">
-      <h2 id="footer-explorer">Explorer</h2>
+    <nav aria-labelledby="footer-travailler">
+      <h2 id="footer-travailler">Travailler</h2>
       <ul class="site-footer__list">
-        <li><a href="index.html">Accueil</a></li>
         <li><a href="coworking.html">Coworking</a></li>
+        <li><a href="coworking.html#formules">Formules &amp; tarifs</a></li>
         <li><a href="salle-de-reunion.html">Salle de réunion</a></li>
+        <li><a href="reserver.html?offre=coworking">Réserver un poste</a></li>
+      </ul>
+    </nav>
+    <nav aria-labelledby="footer-sejourner">
+      <h2 id="footer-sejourner">Séjourner</h2>
+      <ul class="site-footer__list">
         <li><a href="meubles.html">Les meublés</a></li>
-        <li><a href="reserver.html">Réserver</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="meubles.html#chambres">Chambres du Village</a></li>
+        <li><a href="meubles.html#questions">Questions fréquentes</a></li>
+        <li><a href="https://www.leuboucan.re/" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>Réserver sur Leu Boucan<span class="sr-only"> (nouvel onglet)</span></a></li>
       </ul>
     </nav>
     <div>
-      <h2>Nous trouver</h2>
+      <h2>Contact</h2>
       <ul class="site-footer__list">
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><span>Pointe des Châteaux<br>97436 Saint-Leu, La Réunion</span></a></li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Pointe+des+Ch%C3%A2teaux%2C+97436+Saint-Leu%2C+La+R%C3%A9union" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><span>Pointe des Châteaux<br>97436 Saint-Leu, La Réunion<span class="sr-only"> (itinéraire, nouvel onglet)</span></span></a></li>
         <li><a href="tel:+262693025757"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+262 693 02 57 57</a></li>
         <li><a href="mailto:contact@leuvillage.re"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>contact@leuvillage.re</a></li>
-      </ul>
-    </div>
-    <div>
-      <h2>Horaires</h2>
-      <ul class="site-footer__list">
-        <li>Accès libre du lundi au vendredi</li>
-        <li><strong>7h – 18h</strong></li>
-        <li><p class="status" data-status><span class="status__dot"></span><span data-status-text>Coworking ouvert en semaine</span></p></li>
-        <li>Chambres : à la nuit, à la semaine ou au mois</li>
-        <li><a href="https://www.leuboucan.re/" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>Locations Leu Boucan</a></li>
+        <li>Coworking : lun – ven, 7h – 18h</li>
       </ul>
     </div>
   </div>

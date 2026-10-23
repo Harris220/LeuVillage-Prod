@@ -1,7 +1,8 @@
 /* ==========================================================================
-   Leu Village — interactions & animations
-   JavaScript natif, sans dépendance (Lenis optionnel pour le défilement doux).
-   Tout le contenu reste lisible sans JS ; les animations sont un bonus.
+   Leu Village — interface : navigation, animations, galeries
+   JavaScript natif, sans dépendance. Tout le contenu reste lisible sans JS ;
+   les animations sont un bonus et respectent « réduire les animations ».
+   Les formulaires sont gérés à part (forms.js + request.js + config.js).
    ========================================================================== */
 (() => {
   "use strict";
@@ -17,10 +18,6 @@
   const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
   const lerp = (a, b, t) => a + (b - a) * t;
   const euro = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
-  const headerOffset = () => {
-    const bar = $(".site-header__bar");
-    return bar ? bar.getBoundingClientRect().height + 36 : 100;
-  };
 
   /* ---------- Boucle de défilement unique (rAF) ---------- */
   const scrollSubs = new Set();
@@ -39,39 +36,25 @@
   addEventListener("scroll", requestTick, { passive: true });
   addEventListener("resize", requestTick, { passive: true });
 
-  /* ---------- Défilement doux (bureau uniquement) ---------- */
-  let lenis = null;
-  function initLenis() {
-    if (reduceMotion() || !mqFine.matches || typeof window.Lenis !== "function") return;
-    lenis = new window.Lenis({ lerp: 0.11, smoothWheel: true, wheelMultiplier: 1 });
-    const raf = (t) => {
-      lenis.raf(t);
-      requestAnimationFrame(raf);
-    };
-    requestAnimationFrame(raf);
-  }
-
+  /* ---------- Ancres internes : défilement natif + focus pour le clavier ---------- */
   function initAnchors() {
     document.addEventListener("click", (e) => {
       const link = e.target.closest('a[href^="#"]');
       if (!link || e.defaultPrevented) return;
       const hash = link.getAttribute("href");
       if (hash === "#") return;
-      const target = hash === "#top" ? document.body : document.getElementById(hash.slice(1));
+      const target = hash === "#top" ? document.body : document.getElementById(decodeURIComponent(hash.slice(1)));
       if (!target) return;
       e.preventDefault();
-      if (lenis) {
-        lenis.scrollTo(hash === "#top" ? 0 : target, { offset: -headerOffset() });
-      } else if (hash === "#top") {
-        scrollTo({ top: 0, behavior: reduceMotion() ? "auto" : "smooth" });
-      } else {
-        target.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" });
+      const behavior = reduceMotion() ? "auto" : "smooth";
+      if (hash === "#top") {
+        scrollTo({ top: 0, behavior });
+        return;
       }
-      if (hash !== "#top") {
-        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
-        target.focus({ preventScroll: true });
-        history.replaceState(null, "", hash);
-      }
+      target.scrollIntoView({ behavior, block: "start" });
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+      history.replaceState(null, "", hash);
     });
   }
 
@@ -113,8 +96,7 @@
       menu.inert = !open;
       root.classList.toggle("menu-open", open);
       outside.forEach((el) => (el.inert = open));
-      document.body.style.overflow = open ? "hidden" : "";
-      if (lenis) open ? lenis.stop() : lenis.start();
+      document.body.classList.toggle("no-scroll", open);
       if (open) setTimeout(() => $("a", menu)?.focus({ preventScroll: true }), 420);
     };
     btn.addEventListener("click", () => setOpen(btn.getAttribute("aria-expanded") !== "true"));
@@ -158,12 +140,8 @@
             frag.appendChild(outer);
           });
           child.replaceWith(frag);
-        } else if (child.nodeType === Node.ELEMENT_NODE) {
-          if (child.classList.contains("statement__pill")) {
-            child.style.setProperty("--wi", index++);
-          } else if (child.tagName !== "BR") {
-            walk(child);
-          }
+        } else if (child.nodeType === Node.ELEMENT_NODE && child.tagName !== "BR") {
+          walk(child);
         }
       });
     };
@@ -175,9 +153,7 @@
     if (reduceMotion() || !("IntersectionObserver" in window)) return;
     $$("[data-stagger]").forEach((group) => {
       Array.from(group.children).forEach((child, i) => {
-        if (!child.hasAttribute("data-reveal-img") && !child.hasAttribute("data-reveal")) {
-          child.setAttribute("data-reveal", "");
-        }
+        if (!child.hasAttribute("data-reveal-img") && !child.hasAttribute("data-reveal")) child.setAttribute("data-reveal", "");
         child.style.setProperty("--i", i);
       });
     });
@@ -197,9 +173,7 @@
       }
     });
     root.classList.add("js-reveal");
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => $$(".no-anim").forEach((el) => el.classList.remove("no-anim")))
-    );
+    requestAnimationFrame(() => requestAnimationFrame(() => $$(".no-anim").forEach((el) => el.classList.remove("no-anim"))));
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -219,39 +193,6 @@
     pending.forEach((el) => io.observe(el));
   }
 
-  /* ---------- Manifeste : les mots s'éclairent au fil du défilement ---------- */
-  function initScrub() {
-    const el = $("[data-scrub]");
-    if (!el || reduceMotion()) return;
-    splitWords(el);
-    const items = $$(".w, .statement__pill", el);
-    if (!items.length) return;
-    root.classList.add("js-scrub");
-    let start = 0;
-    let end = 1;
-    const measure = () => {
-      const r = el.getBoundingClientRect();
-      const top = r.top + window.scrollY;
-      start = top - innerHeight * 0.82;
-      end = top + r.height - innerHeight * 0.38;
-    };
-    measure();
-    addEventListener("resize", measure, { passive: true });
-    addEventListener("load", measure, { once: true });
-    document.fonts?.ready.then(measure);
-    let last = -1;
-    scrollSubs.add((y) => {
-      const p = clamp((y - start) / (end - start), 0, 1);
-      const lit = p * items.length;
-      if (Math.abs(lit - last) < 0.02) return;
-      last = lit;
-      items.forEach((item, i) => {
-        item.style.setProperty("--o", (0.14 + clamp(lit - i, 0, 1) * 0.86).toFixed(3));
-      });
-    });
-    requestTick();
-  }
-
   /* ---------- Parallaxe douce des images ---------- */
   function initParallax() {
     if (reduceMotion()) return;
@@ -269,14 +210,13 @@
       const factor = innerWidth < 700 ? 0.55 : 1;
       const reads = [];
       active.forEach((el) => {
-        const frame = el.closest(".parallax-wrap") || el.parentElement;
-        reads.push([el, frame.getBoundingClientRect(), el.offsetHeight - frame.offsetHeight]);
+        const box = el.closest(".parallax-wrap") || el.parentElement;
+        reads.push([el, box.getBoundingClientRect(), el.offsetHeight - box.offsetHeight]);
       });
       reads.forEach(([el, r, extra]) => {
         const speed = parseFloat(el.dataset.parallax) || 0.1;
-        const distance = r.top + r.height / 2 - vh / 2;
         const limit = Math.max(0, extra / 2);
-        const y = clamp(-distance * speed * factor, -limit, limit);
+        const y = clamp(-(r.top + r.height / 2 - vh / 2) * speed * factor, -limit, limit);
         el.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
       });
     });
@@ -366,7 +306,7 @@
     schedule(DURATION);
   }
 
-  /* Images différées (diapositives 2+) : chargées après la page */
+  /* Images différées (diapositives 2 et suivantes) : chargées après la page */
   function hydrateDeferred() {
     const run = () =>
       $$("[data-defer-srcset], [data-defer-src]").forEach((node) => {
@@ -379,7 +319,7 @@
     else addEventListener("load", () => setTimeout(run, 300), { once: true });
   }
 
-  /* ---------- Heure locale & statut d'ouverture (fuseau de La Réunion) ---------- */
+  /* ---------- Heure locale & statut d'ouverture du coworking (fuseau de La Réunion) ---------- */
   function initClock() {
     const clocks = $$("[data-clock]");
     const statuses = $$("[data-status]");
@@ -389,13 +329,7 @@
     let partsFmt;
     try {
       timeFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: tz, hour: "2-digit", minute: "2-digit" });
-      partsFmt = new Intl.DateTimeFormat("en-GB", {
-        timeZone: tz,
-        weekday: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23",
-      });
+      partsFmt = new Intl.DateTimeFormat("en-GB", { timeZone: tz, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
     } catch {
       return;
     }
@@ -427,21 +361,23 @@
     setInterval(update, 30000);
   }
 
-  /* ---------- Compteurs ---------- */
+  /* ---------- Compteurs (chiffres qui montent à l'apparition) ---------- */
   function initCounters() {
     const els = $$("[data-count]");
     if (!els.length || reduceMotion() || !("IntersectionObserver" in window)) return;
     const run = (el) => {
       const target = parseFloat(el.dataset.count);
+      const final = euro.format(target);
+      el.textContent = "0"; // la vraie valeur reste affichée tant que l'animation n'a pas commencé
       const t0 = performance.now();
       const dur = 1700;
       const step = (t) => {
         const p = clamp((t - t0) / dur, 0, 1);
-        const eased = 1 - Math.pow(1 - p, 4);
-        el.textContent = euro.format(Math.round(target * eased));
+        el.textContent = euro.format(Math.round(target * (1 - Math.pow(1 - p, 4))));
         if (p < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
+      setTimeout(() => (el.textContent = final), dur + 250); // valeur exacte garantie
     };
     const io = new IntersectionObserver(
       (entries) =>
@@ -453,95 +389,48 @@
       { threshold: 0.5 }
     );
     els.forEach((el) => {
-      if (el.getBoundingClientRect().top > innerHeight) {
-        el.textContent = "0";
-        io.observe(el);
-      }
+      if (el.getBoundingClientRect().top > innerHeight) io.observe(el);
     });
   }
 
-  /* ---------- Panneaux extensibles ---------- */
-  function initPanels() {
-    $$("[data-panels]").forEach((wrap) => {
-      const panels = $$(".panel", wrap);
-      const activate = (panel) => panels.forEach((p) => p.classList.toggle("is-active", p === panel));
-      panels.forEach((panel) => {
-        panel.addEventListener("pointerenter", (e) => {
-          if (e.pointerType === "mouse") activate(panel);
+  /* ---------- Cartes d'univers : toute la carte ouvre la page (relais du lien du titre) ---------- */
+  function initCardLinks() {
+    $$(".universe").forEach((card) => {
+      const link = $(".universe__link", card);
+      if (!link) return;
+      card.addEventListener("click", (e) => {
+        if (e.defaultPrevented || e.target.closest("a, button")) return;
+        if (window.getSelection && String(window.getSelection()).length) return; // sélection de texte
+        link.click();
+      });
+    });
+  }
+
+  /* ---------- Cartes d'univers : inclinaison 3D et lueur qui suivent la souris ---------- */
+  function initTilt() {
+    if (!mqFine.matches || reduceMotion()) return;
+    $$("[data-tilt]").forEach((card) => {
+      let raf = 0;
+      card.addEventListener("pointermove", (e) => {
+        if (e.pointerType !== "mouse") return;
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const r = card.getBoundingClientRect();
+          const px = clamp((e.clientX - r.left) / r.width, 0, 1);
+          const py = clamp((e.clientY - r.top) / r.height, 0, 1);
+          card.classList.add("is-tilting");
+          card.style.setProperty("--ry", `${((px - 0.5) * 6).toFixed(2)}deg`);
+          card.style.setProperty("--rx", `${((0.5 - py) * 5).toFixed(2)}deg`);
+          card.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
+          card.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
         });
-        panel.addEventListener("focusin", () => activate(panel));
       });
-    });
-  }
-
-  /* ---------- Carrousel horizontal (défilement natif + glisser à la souris) ---------- */
-  function initCarousels() {
-    $$("[data-carousel]").forEach((wrap) => {
-      const track = $(".carousel__track", wrap);
-      if (!track) return;
-      const prev = $("[data-prev]", wrap);
-      const next = $("[data-next]", wrap);
-      const bar = $(".carousel__progress span", wrap);
-      const step = () => {
-        const card = track.firstElementChild;
-        const gap = parseFloat(getComputedStyle(track).columnGap) || 16;
-        return card ? card.getBoundingClientRect().width + gap : 320;
-      };
-      const update = () => {
-        const max = track.scrollWidth - track.clientWidth;
-        const p = max > 0 ? track.scrollLeft / max : 1;
-        bar?.style.setProperty("--p", (0.12 + p * 0.88).toFixed(3));
-        if (prev) prev.disabled = track.scrollLeft < 4;
-        if (next) next.disabled = track.scrollLeft > max - 4;
-      };
-      const behavior = () => (reduceMotion() ? "auto" : "smooth");
-      prev?.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: behavior() }));
-      next?.addEventListener("click", () => track.scrollBy({ left: step(), behavior: behavior() }));
-      track.addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
-      addEventListener("resize", update, { passive: true });
-      update();
-
-      let down = false;
-      let startX = 0;
-      let startLeft = 0;
-      let moved = 0;
-      track.addEventListener("pointerdown", (e) => {
-        if (e.pointerType !== "mouse" || e.button !== 0) return;
-        down = true;
-        moved = 0;
-        startX = e.clientX;
-        startLeft = track.scrollLeft;
+      card.addEventListener("pointerleave", () => {
+        cancelAnimationFrame(raf);
+        card.classList.remove("is-tilting");
+        card.style.setProperty("--rx", "0deg");
+        card.style.setProperty("--ry", "0deg");
       });
-      addEventListener("pointermove", (e) => {
-        if (!down) return;
-        const dx = e.clientX - startX;
-        moved = Math.max(moved, Math.abs(dx));
-        if (moved > 6) {
-          track.classList.add("is-dragging");
-          track.scrollLeft = startLeft - dx;
-        }
-      });
-      addEventListener("pointerup", () => {
-        if (!down) return;
-        down = false;
-        if (!track.classList.contains("is-dragging")) return;
-        const s = step();
-        const target = Math.round(track.scrollLeft / s) * s;
-        track.classList.remove("is-dragging");
-        track.scrollTo({ left: target, behavior: behavior() });
-      });
-      track.addEventListener(
-        "click",
-        (e) => {
-          if (moved > 6) {
-            e.preventDefault();
-            e.stopPropagation();
-            moved = 0;
-          }
-        },
-        true
-      );
-      track.addEventListener("dragstart", (e) => e.preventDefault());
     });
   }
 
@@ -575,7 +464,6 @@
         });
         move(tab);
         if (focus) tab.focus();
-        wrap.dispatchEvent(new CustomEvent("tabchange", { detail: { value: tab.dataset.value } }));
       };
       tabs.forEach((tab, i) => {
         tab.addEventListener("click", () => select(tab));
@@ -596,7 +484,8 @@
       wrap.classList.add("is-ready");
       move(current(), true);
       addEventListener("resize", () => move(current(), true), { passive: true });
-      document.fonts?.ready.then(() => move(current(), true));
+      if (document.fonts) document.fonts.ready.then(() => move(current(), true));
+      /* Utilisé par forms.js pour ouvrir l'onglet demandé dans l'URL (valeur déjà filtrée) */
       wrap.selectTab = (value) => {
         const tab = tabs.find((t) => t.dataset.value === value);
         if (tab) select(tab, { silent: true });
@@ -625,7 +514,7 @@
         const f = btn.dataset.filter;
         buttons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
         items.forEach((item) => {
-          const show = f === "all" || item.dataset.location.split(" ").includes(f);
+          const show = f === "all" || item.dataset.location === f;
           const wasHidden = item.classList.contains("is-filtered-out");
           item.classList.toggle("is-filtered-out", !show);
           if (show && wasHidden && !reduceMotion()) {
@@ -655,34 +544,26 @@
       let index = 0;
       const update = () => {
         index = clamp(Math.round(track.scrollLeft / Math.max(1, track.clientWidth)), 0, slides.length - 1);
-        dots.forEach((d, i) => d.classList.toggle("is-active", i === index));
+        dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
         if (prev) prev.disabled = index <= 0;
         if (next) next.disabled = index >= slides.length - 1;
       };
-      const go = (n) =>
-        track.scrollTo({
-          left: clamp(n, 0, slides.length - 1) * track.clientWidth,
-          behavior: reduceMotion() ? "auto" : "smooth",
-        });
+      const go = (n) => track.scrollTo({ left: clamp(n, 0, slides.length - 1) * track.clientWidth, behavior: reduceMotion() ? "auto" : "smooth" });
       prev?.addEventListener("click", () => go(index - 1));
       next?.addEventListener("click", () => go(index + 1));
       zoom?.addEventListener("click", () => slides[index]?.click());
       track.addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
       track.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowRight") {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
-          go(index + 1);
-        }
-        if (e.key === "ArrowLeft") {
-          e.preventDefault();
-          go(index - 1);
+          go(index + (e.key === "ArrowRight" ? 1 : -1));
         }
       });
       update();
     });
   }
 
-  /* ---------- Visionneuse plein écran ---------- */
+  /* ---------- Visionneuse plein écran (clone d'images déjà présentes dans la page) ---------- */
   function initLightbox() {
     const dlg = $("#lightbox");
     if (!dlg || typeof dlg.showModal !== "function") return;
@@ -696,8 +577,7 @@
     let index = 0;
     let opener = null;
     const render = () => {
-      const source = items[index];
-      const pic = $("picture", source)?.cloneNode(true);
+      const pic = $("picture", items[index])?.cloneNode(true);
       if (!pic) return;
       pic.querySelectorAll("source, img").forEach((n) => n.setAttribute("sizes", "(min-width: 1200px) 82vw, 100vw"));
       const img = $("img", pic);
@@ -708,29 +588,25 @@
       const pad = (n) => String(n).padStart(2, "0");
       countEl.textContent = `${pad(index + 1)} / ${pad(items.length)}`;
       capEl.textContent = img.alt || "";
-      const single = items.length < 2;
-      prevBtn.hidden = single;
-      nextBtn.hidden = single;
+      prevBtn.hidden = items.length < 2;
+      nextBtn.hidden = items.length < 2;
     };
     const go = (n) => {
       index = (n + items.length) % items.length;
       render();
     };
-    const open = (trigger) => {
+    document.addEventListener("click", (e) => {
+      const trigger = e.target.closest("[data-lightbox]");
+      if (!trigger) return;
+      e.preventDefault();
       const group = trigger.dataset.lightbox;
-      items = $$(`[data-lightbox="${group}"]`);
+      items = $$("[data-lightbox]").filter((el) => el.dataset.lightbox === group);
       index = Math.max(0, items.indexOf(trigger));
       opener = trigger;
       titleEl.textContent = trigger.dataset.title || "";
       render();
       dlg.showModal();
-      lenis?.stop();
-    };
-    document.addEventListener("click", (e) => {
-      const trigger = e.target.closest("[data-lightbox]");
-      if (!trigger) return;
-      e.preventDefault();
-      open(trigger);
+      document.body.classList.add("no-scroll");
     });
     prevBtn.addEventListener("click", () => go(index - 1));
     nextBtn.addEventListener("click", () => go(index + 1));
@@ -743,7 +619,7 @@
       if (e.key === "ArrowLeft") go(index - 1);
     });
     dlg.addEventListener("close", () => {
-      lenis?.start();
+      document.body.classList.remove("no-scroll");
       opener?.focus({ preventScroll: true });
     });
     let sx = 0;
@@ -759,15 +635,21 @@
     });
   }
 
-  /* ---------- Carte chargée au clic (vie privée + performance) ---------- */
+  /* ---------- Carte Google chargée seulement à la demande (vie privée + performance) ---------- */
   function initMap() {
     $$("[data-map]").forEach((wrap) => {
       $("[data-map-load]", wrap)?.addEventListener("click", () => {
+        let src;
+        try {
+          src = new URL(wrap.dataset.map);
+        } catch {
+          return;
+        }
+        if (src.protocol !== "https:" || !/(^|\.)google\.com$/.test(src.hostname)) return;
         const iframe = document.createElement("iframe");
-        iframe.src = wrap.dataset.map;
+        iframe.src = src.href;
         iframe.title = "Carte : Leu Village, Pointe des Châteaux, Saint-Leu";
-        iframe.loading = "lazy";
-        iframe.referrerPolicy = "no-referrer-when-downgrade";
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
         iframe.allowFullscreen = true;
         wrap.appendChild(iframe);
         $(".map__facade", wrap)?.remove();
@@ -775,7 +657,7 @@
     });
   }
 
-  /* ---------- Boutons magnétiques & curseur contextuel ---------- */
+  /* ---------- Boutons magnétiques & curseur contextuel (souris uniquement) ---------- */
   function initMagnetic() {
     if (!mqFine.matches || reduceMotion()) return;
     $$("[data-magnetic]").forEach((el) => {
@@ -867,25 +749,6 @@
     setActive(0);
   }
 
-  /* ---------- Nombre animé (prix) ---------- */
-  function tweenNumber(el, to, { duration = 600, decimals = 0 } = {}) {
-    const from = parseFloat(el.dataset.value ?? el.textContent.replace(/[^\d,.-]/g, "").replace(",", ".")) || 0;
-    el.dataset.value = String(to);
-    const fmt = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-    if (reduceMotion() || from === to) {
-      el.textContent = fmt.format(to);
-      return;
-    }
-    const t0 = performance.now();
-    const step = (t) => {
-      const p = clamp((t - t0) / duration, 0, 1);
-      const e = 1 - Math.pow(1 - p, 3);
-      el.textContent = fmt.format(from + (to - from) * e);
-      if (p < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
-
   /* ---------- Calculateur salle de réunion ---------- */
   function initCalc() {
     $$("[data-calc]").forEach((wrap) => {
@@ -893,381 +756,38 @@
       const rate = $("[data-calc-rate]", wrap);
       const label = $("[data-calc-label]", wrap);
       const cta = $("[data-calc-cta]", wrap);
+      const tween = (to) => {
+        const from = parseFloat(amount.dataset.value) || to;
+        amount.dataset.value = String(to);
+        const final = () => {
+          if (amount.dataset.value === String(to)) amount.textContent = euro.format(to);
+        };
+        if (reduceMotion() || from === to || document.hidden) {
+          final();
+          return;
+        }
+        const t0 = performance.now();
+        const step = (t) => {
+          if (amount.dataset.value !== String(to)) return;
+          const p = clamp((t - t0) / 600, 0, 1);
+          amount.textContent = euro.format(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+        setTimeout(final, 750); // filet de sécurité si l'onglet ne rafraîchit pas l'affichage
+      };
       const update = () => {
         const input = $("input:checked", wrap);
         if (!input) return;
-        const price = parseFloat(input.dataset.price);
-        const hours = parseFloat(input.dataset.hours);
-        tweenNumber(amount, price);
+        const price = Number(input.dataset.price);
+        const hours = Number(input.dataset.hours);
+        tween(price);
         if (rate) rate.textContent = `soit ${euro.format(price / hours)} € HT de l’heure`;
         if (label) label.textContent = input.dataset.label;
-        if (cta) cta.href = `reserver.html?offre=salle&duree=${input.value}`;
+        if (cta && /^(1h|4h|8h)$/.test(input.value)) cta.href = `reserver.html?offre=salle&duree=${input.value}`;
       };
       wrap.addEventListener("change", update);
       update();
-    });
-  }
-
-  /* ---------- Formulaires (réservation & contact) ---------- */
-  const MESSAGES = {
-    required: "Ce champ est obligatoire.",
-    email: "Indiquez une adresse e-mail valide (ex. nom@domaine.fr).",
-    tel: "Indiquez un numéro de téléphone valide (ex. 0692 12 34 56).",
-    past: "Choisissez une date à partir d’aujourd’hui.",
-    weekend: "Le coworking est ouvert du lundi au vendredi.",
-    order: "La date de départ doit être après la date d’arrivée.",
-    consent: "Merci d’accepter l’utilisation de vos données pour traiter votre demande.",
-    choice: "Sélectionnez une option.",
-  };
-  const todayISO = () => {
-    const d = new Date();
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 10);
-  };
-  const parseISO = (v) => {
-    const [y, m, d] = v.split("-").map(Number);
-    return new Date(y, m - 1, d);
-  };
-  const longDate = (v) =>
-    v
-      ? new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(
-          parseISO(v)
-        )
-      : "—";
-
-  function fieldError(field) {
-    const input = $("input, select, textarea", field);
-    if (!input) return "";
-    if (input.type === "radio") {
-      const group = $$(`input[name="${input.name}"]`, field);
-      return input.required && !group.some((r) => r.checked) ? MESSAGES.choice : "";
-    }
-    if (input.type === "checkbox") return input.required && !input.checked ? MESSAGES.consent : "";
-    const v = input.value.trim();
-    if (input.required && !v) return MESSAGES.required;
-    if (!v) return "";
-    if (input.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return MESSAGES.email;
-    if (input.type === "tel" && !/^\+?[\d\s.()-]{8,20}$/.test(v)) return MESSAGES.tel;
-    if (input.type === "date") {
-      if (v < todayISO()) return MESSAGES.past;
-      if (input.dataset.weekday !== undefined) {
-        const day = parseISO(v).getDay();
-        if (day === 0 || day === 6) return MESSAGES.weekend;
-      }
-      if (input.dataset.after) {
-        const other = document.getElementById(input.dataset.after);
-        if (other?.value && v <= other.value) return MESSAGES.order;
-      }
-    }
-    return "";
-  }
-
-  function setFieldState(field, message) {
-    const input = $("input, select, textarea", field);
-    const err = $(".field__error", field);
-    field.classList.toggle("is-invalid", Boolean(message));
-    if (err) err.querySelector("span").textContent = message;
-    $$("input, select, textarea", field).forEach((el) => {
-      if (message) el.setAttribute("aria-invalid", "true");
-      else el.removeAttribute("aria-invalid");
-    });
-    return input;
-  }
-
-  function validateForm(form) {
-    const errors = [];
-    $$("[data-field]", form).forEach((field) => {
-      if (field.closest("[hidden]")) return;
-      const msg = fieldError(field);
-      const input = setFieldState(field, msg);
-      if (msg) errors.push({ field, input, msg });
-    });
-    return errors;
-  }
-
-  function showAlert(form, errors) {
-    const alert = $(".form-alert", form);
-    if (!alert) {
-      errors[0]?.input?.focus();
-      return;
-    }
-    const list = $("ul", alert);
-    list.replaceChildren(
-      ...errors.map(({ field, input, msg }) => {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        const name = $(".field__label, label", field)?.textContent.replace(/[*()]|facultatif/gi, "").trim() || "Champ";
-        a.href = `#${input.id}`;
-        a.textContent = `${name} : ${msg}`;
-        a.addEventListener("click", (e) => {
-          e.preventDefault();
-          input.focus();
-        });
-        li.appendChild(a);
-        return li;
-      })
-    );
-    alert.classList.add("is-visible");
-    alert.focus();
-  }
-
-  function wireLiveValidation(form) {
-    $$("[data-field]", form).forEach((field) => {
-      const check = () => setFieldState(field, fieldError(field));
-      field.addEventListener("focusout", (e) => {
-        if (field.contains(e.relatedTarget)) return;
-        const input = $("input, select, textarea", field);
-        if (input && (input.value || field.classList.contains("is-invalid"))) check();
-      });
-      field.addEventListener("input", () => {
-        if (field.classList.contains("is-invalid")) check();
-      });
-      field.addEventListener("change", () => {
-        if (field.classList.contains("is-invalid")) check();
-      });
-    });
-  }
-
-  async function submitForm(form, payload, onSuccess) {
-    const btn = $('[type="submit"]', form);
-    btn?.classList.add("is-loading");
-    if (btn) btn.disabled = true;
-    try {
-      if (form.dataset.demo === "true") {
-        await new Promise((r) => setTimeout(r, 900));
-      } else {
-        const res = await fetch(form.action, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      }
-      onSuccess();
-    } catch (err) {
-      const alert = $(".form-alert", form);
-      if (alert) {
-        $("ul", alert).replaceChildren(
-          Object.assign(document.createElement("li"), {
-            textContent:
-              "L’envoi n’a pas abouti. Réessayez dans un instant ou appelez-nous au +262 693 02 57 57.",
-          })
-        );
-        alert.classList.add("is-visible");
-        alert.focus();
-      }
-    } finally {
-      btn?.classList.remove("is-loading");
-      if (btn) btn.disabled = false;
-    }
-  }
-
-  function successCard({ title, text, rows, demo }) {
-    const card = document.createElement("div");
-    card.className = "success";
-    card.setAttribute("tabindex", "-1");
-    card.setAttribute("role", "status");
-    const rowsHtml = rows
-      .filter(([, v]) => v)
-      .map(([k, v]) => `<div class="summary__row"><dt>${k}</dt><dd>${v}</dd></div>`)
-      .join("");
-    card.innerHTML = `
-      <span class="success__icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
-      <h2 class="h3">${title}</h2>
-      <p class="lead">${text}</p>
-      ${rowsHtml ? `<dl class="summary__rows success__rows">${rowsHtml}</dl>` : ""}
-      ${demo ? '<p class="demo-note">Mode démo : rien n’a été envoyé, le serveur sera branché plus tard.</p>' : ""}
-      <a class="link" href="index.html">Retour à l’accueil <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>`;
-    return card;
-  }
-
-  const escapeHtml = (s) =>
-    String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-
-  /* Réservation : coworking, salle, séjour */
-  function initBooking() {
-    const page = $("[data-booking]");
-    if (!page) return;
-    const params = new URLSearchParams(location.search);
-    const tabsWrap = $("[data-tabs]", page);
-    const offer = params.get("offre");
-    if (offer && tabsWrap?.selectTab) tabsWrap.selectTab(offer);
-
-    $$("form[data-booking-form]", page).forEach((form) => {
-      const type = form.dataset.bookingForm;
-      const out = (name) => $(`[data-out="${name}"]`, form.closest(".booking"));
-      const totalEl = out("total");
-      $$('input[type="date"]', form).forEach((d) => (d.min = todayISO()));
-
-      // Préremplissage depuis l'URL
-      if (offer === type) {
-        const formule = params.get("formule");
-        const duree = params.get("duree");
-        if (formule) $(`input[name="formule"][value="${formule}"]`, form)?.click();
-        if (duree) $(`input[name="duree"][value="${duree}"]`, form)?.click();
-      }
-
-      const stepper = $("[data-stepper]", form);
-      if (stepper) {
-        const input = $("input", stepper);
-        const min = parseInt(input.min, 10) || 1;
-        const max = parseInt(input.max, 10) || 30;
-        $$("button", stepper).forEach((b) =>
-          b.addEventListener("click", () => {
-            input.value = clamp((parseInt(input.value, 10) || min) + parseInt(b.dataset.step, 10), min, max);
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-          })
-        );
-      }
-
-      const compute = () => {
-        const data = Object.fromEntries(new FormData(form));
-        let total = 0;
-        const rows = {};
-        if (type === "coworking") {
-          const f = $('input[name="formule"]:checked', form);
-          const days = clamp(parseInt(data.jours, 10) || 1, 1, 30);
-          const daysField = $("[data-days-field]", form);
-          if (daysField) daysField.hidden = f?.value !== "flex-jour";
-          rows.formule = f?.dataset.label || "—";
-          rows.poste = $('input[name="poste"]:checked', form)?.dataset.label || "—";
-          rows.debut = data.date_debut ? longDate(data.date_debut) : "À choisir";
-          if (f) {
-            const price = parseFloat(f.dataset.price);
-            total = f.value === "flex-jour" ? price * days : price;
-            rows.duree = f.value === "flex-jour" ? `${days} jour${days > 1 ? "s" : ""}` : f.dataset.duration;
-          }
-          $("[data-pass-hint]", form.closest(".booking"))?.classList.toggle(
-            "is-visible",
-            f?.value === "flex-jour" && days >= 8
-          );
-        }
-        if (type === "salle") {
-          const d = $('input[name="duree"]:checked', form);
-          const hours = d ? parseFloat(d.dataset.hours) : 0;
-          const startSel = $('select[name="heure_debut"]', form);
-          if (startSel && d) {
-            const latest = 18 - hours;
-            const current = startSel.value;
-            const opts = [];
-            for (let h = 7; h <= latest; h++) opts.push(`${String(h).padStart(2, "0")}:00`);
-            if (startSel.dataset.hours !== String(hours)) {
-              startSel.dataset.hours = String(hours);
-              startSel.replaceChildren(
-                ...opts.map((o) => Object.assign(document.createElement("option"), { value: o, textContent: o.replace(":", "h") }))
-              );
-              startSel.value = opts.includes(current) ? current : opts[Math.min(2, opts.length - 1)];
-            }
-          }
-          const start = startSel?.value;
-          rows.duree = d?.dataset.label || "—";
-          rows.date = data.date ? longDate(data.date) : "À choisir";
-          if (start && hours) {
-            const end = parseInt(start, 10) + hours;
-            rows.horaire = `${start.replace(":", "h")} – ${String(end).padStart(2, "0")}h00`;
-          }
-          rows.participants = data.participants ? `${data.participants} pers.` : "—";
-          total = d ? parseFloat(d.dataset.price) : 0;
-        }
-        if (type === "sejour") {
-          const nightly = parseFloat(form.dataset.nightly) || 95;
-          const a = data.arrivee;
-          const b = data.depart;
-          let nights = 0;
-          if (a && b && b > a) nights = Math.round((parseISO(b) - parseISO(a)) / 86400000);
-          rows.arrivee = a ? longDate(a) : "À choisir";
-          rows.depart = b ? longDate(b) : "À choisir";
-          rows.nuits = nights ? `${nights} nuit${nights > 1 ? "s" : ""}` : "—";
-          rows.voyageurs = data.voyageurs ? `${data.voyageurs} pers.` : "—";
-          total = nights * nightly;
-          const dep = $('input[name="depart"]', form);
-          if (dep && a) {
-            const next = parseISO(a);
-            next.setDate(next.getDate() + 1);
-            next.setMinutes(next.getMinutes() - next.getTimezoneOffset());
-            dep.min = next.toISOString().slice(0, 10);
-          }
-        }
-        Object.entries(rows).forEach(([k, v]) => {
-          const el = out(k);
-          if (el) el.textContent = v;
-        });
-        if (totalEl) tweenNumber(totalEl, total);
-        return { data, total, rows };
-      };
-
-      form.addEventListener("input", compute);
-      form.addEventListener("change", compute);
-      compute();
-      wireLiveValidation(form);
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const errors = validateForm(form);
-        if (errors.length) {
-          showAlert(form, errors);
-          return;
-        }
-        $(".form-alert", form)?.classList.remove("is-visible");
-        const { data, total, rows } = compute();
-        const payload = { type, ...data, total_ht: total, envoye_le: new Date().toISOString() };
-        submitForm(form, payload, () => {
-          const booking = form.closest(".booking");
-          const first = escapeHtml(data.prenom || "");
-          const labels = {
-            formule: "Formule",
-            poste: "Poste",
-            debut: "Début",
-            duree: "Durée",
-            date: "Date",
-            horaire: "Horaire",
-            participants: "Participants",
-            arrivee: "Arrivée",
-            depart: "Départ",
-            nuits: "Durée",
-            voyageurs: "Voyageurs",
-          };
-          const recap = Object.entries(rows).map(([k, v]) => [labels[k] || k, escapeHtml(v)]);
-          recap.push([type === "sejour" ? "Estimation" : "Total HT", `${euro.format(total)} €`]);
-          const card = successCard({
-            title: `Merci${first ? ` ${first}` : ""}, c’est noté !`,
-            text: "Votre demande est bien partie. Nous revenons vers vous pour confirmer la disponibilité et finaliser la réservation.",
-            rows: recap,
-            demo: form.dataset.demo === "true",
-          });
-          booking.replaceChildren(card);
-          card.focus({ preventScroll: true });
-          const top = card.getBoundingClientRect().top + scrollY - headerOffset();
-          lenis ? lenis.scrollTo(top) : scrollTo({ top, behavior: reduceMotion() ? "auto" : "smooth" });
-        });
-      });
-    });
-  }
-
-  /* Formulaire de contact */
-  function initContactForm() {
-    const form = $("form[data-contact-form]");
-    if (!form) return;
-    wireLiveValidation(form);
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const errors = validateForm(form);
-      if (errors.length) {
-        showAlert(form, errors);
-        return;
-      }
-      $(".form-alert", form)?.classList.remove("is-visible");
-      const data = Object.fromEntries(new FormData(form));
-      submitForm(form, { ...data, envoye_le: new Date().toISOString() }, () => {
-        const card = successCard({
-          title: `Merci${data.prenom ? ` ${escapeHtml(data.prenom)}` : ""} !`,
-          text: "Votre message est bien arrivé. Nous vous répondons au plus vite, par e-mail ou par téléphone.",
-          rows: [],
-          demo: form.dataset.demo === "true",
-        });
-        form.replaceWith(card);
-        card.focus();
-      });
     });
   }
 
@@ -1288,23 +808,21 @@
   }
 
   /* ---------- Démarrage ---------- */
-  const boot = [
+  [
     initImages,
     initYear,
-    initLenis,
     initAnchors,
     initHeader,
     initMenu,
     initTabs,
     initReveal,
-    initScrub,
     initParallax,
     initHero,
     hydrateDeferred,
     initClock,
     initCounters,
-    initPanels,
-    initCarousels,
+    initCardLinks,
+    initTilt,
     initFilters,
     initSliders,
     initLightbox,
@@ -1313,10 +831,7 @@
     initCursor,
     initStory,
     initCalc,
-    initBooking,
-    initContactForm,
-  ];
-  boot.forEach((fn) => {
+  ].forEach((fn) => {
     try {
       fn();
     } catch (err) {
