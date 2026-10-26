@@ -3502,6 +3502,14 @@ a.contact-card:hover {
 .section--universes {
   padding-top: clamp(3rem, 2rem + 4vw, 6.5rem);
   padding-bottom: clamp(2.5rem, 1.5rem + 3vw, 5rem);
+  /* les cartes qui glissent depuis les côtés ne doivent pas élargir la page (mobile) */
+  overflow-x: clip;
+}
+@supports not (overflow-x: clip) {
+  .js-reveal .section--universes [data-reveal="left"]:not(.is-in),
+  .js-reveal .section--universes [data-reveal="right"]:not(.is-in) {
+    transform: translate3d(0, 34px, 0);
+  }
 }
 .universes {
   display: grid;
