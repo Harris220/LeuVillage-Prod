@@ -47,9 +47,9 @@
 /* ---------- Jetons ---------- */
 :root {
   /* Couleurs (échantillonnées sur le logo) */
-  --cream: #fcf0e4;
-  --sand: #f7e9d7;
-  --sand-2: #f1ddc5;
+  --cream: #fbf4ea;
+  --sand: #f2e8d9;
+  --sand-2: #eadcc6;
   --surface: #fffdf9;
   --ink: #2e2318;
   --ink-2: #5c4b3d;
@@ -705,7 +705,7 @@ strong {
   padding: 0 0.5rem 0 1.15rem;
   border-radius: var(--r-pill);
   border: 1px solid rgb(46 35 24 / 0.07);
-  background: rgb(252 240 228 / 0.78);
+  background: rgb(251 244 234 / 0.78);
   -webkit-backdrop-filter: blur(18px) saturate(1.5);
   backdrop-filter: blur(18px) saturate(1.5);
   box-shadow: 0 1px 2px rgb(46 35 24 / 0.05), 0 12px 30px -18px rgb(46 35 24 / 0.35);
@@ -713,7 +713,7 @@ strong {
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .site-header__bar {
-    background: rgb(252 240 228 / 0.97);
+    background: rgb(251 244 234 / 0.97);
   }
 }
 .site-header.is-hidden .site-header__bar {
@@ -2060,6 +2060,12 @@ strong {
   height: 100%;
   object-fit: cover;
 }
+.cta-card__note .media-note {
+  left: auto;
+  right: 1rem;
+  top: 1rem;
+  bottom: auto;
+}
 .cta-card::after {
   content: "";
   position: absolute;
@@ -2112,12 +2118,6 @@ strong {
   align-content: start;
   gap: 1.4rem;
 }
-.site-footer__logo {
-  width: 104px;
-  border-radius: var(--r-md);
-  overflow: hidden;
-  box-shadow: 0 12px 30px -16px rgb(0 0 0 / 0.6);
-}
 .site-footer__tagline {
   font-family: var(--ff-display);
   font-size: clamp(1.45rem, 1.2rem + 1vw, 2.1rem);
@@ -2160,22 +2160,22 @@ strong {
 .site-footer__list li {
   color: rgb(248 236 223 / 0.86);
 }
-.site-footer__word {
-  margin-top: clamp(3rem, 2rem + 5vw, 7rem);
-  font-family: var(--ff-display);
-  font-size: clamp(4.4rem, 1rem + 15.5vw, 19rem);
-  font-weight: 340;
-  line-height: 0.74;
-  letter-spacing: -0.05em;
-  text-align: center;
-  white-space: nowrap;
-  color: var(--on-night);
-  user-select: none;
-  height: 0.62em;
-  overflow: hidden;
+.site-footer__mark {
+  display: flex;
+  justify-content: center;
+  margin-block: clamp(2.75rem, 2rem + 3vw, 4.5rem) clamp(1.5rem, 1rem + 2vw, 2.5rem);
 }
-.site-footer__word em {
-  color: var(--amber);
+.site-footer__mark picture {
+  display: block;
+  width: clamp(112px, 8vw + 64px, 148px);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.7);
+}
+.site-footer__mark img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .site-footer__bottom {
   display: flex;
@@ -2308,6 +2308,13 @@ strong {
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   overscroll-behavior-x: contain;
+}
+.listing__track.is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+.listing__track.is-dragging .listing__slide {
+  cursor: grabbing;
 }
 .listing__track::-webkit-scrollbar {
   display: none;
@@ -2610,6 +2617,8 @@ strong {
   display: contents;
 }
 .lightbox__stage img {
+  -webkit-user-drag: none;
+  user-select: none;
   max-width: 100%;
   max-height: 100%;
   width: auto;
@@ -2626,6 +2635,15 @@ strong {
 .lightbox .icon-btn:hover {
   background: #fff;
   color: var(--ink);
+}
+.lightbox .lightbox__prev,
+.lightbox .lightbox__next {
+  width: 52px;
+  height: 52px;
+  background: rgb(255 255 255 / 0.92);
+  border-color: transparent;
+  color: var(--ink);
+  box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.6);
 }
 .lightbox__prev,
 .lightbox__next {
@@ -3237,7 +3255,7 @@ a.contact-card:hover {
   padding: 1.5rem;
   text-align: center;
   background:
-    radial-gradient(circle at 50% 50%, rgb(252 240 228 / 0.2), rgb(252 240 228 / 0.85) 70%),
+    radial-gradient(circle at 50% 50%, rgb(251 244 234 / 0.2), rgb(251 244 234 / 0.85) 70%),
     repeating-linear-gradient(0deg, transparent 0 46px, rgb(46 35 24 / 0.06) 46px 47px),
     repeating-linear-gradient(90deg, transparent 0 46px, rgb(46 35 24 / 0.06) 46px 47px),
     var(--sand);
@@ -3902,49 +3920,11 @@ a.contact-card:hover {
 }
 
 /* ---------- Bandeau corail de fin de page (pages « Travailler ») ---------- */
-.cta-band {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1.5rem 3rem;
-  align-items: center;
-  padding: clamp(1.75rem, 1rem + 3vw, 4rem);
-  border-radius: var(--r-xl);
-  background: var(--coral-600);
-  color: #fff;
-  overflow: hidden;
-  isolation: isolate;
-}
-.cta-band::before {
-  content: "";
-  position: absolute;
-  right: -10%;
-  top: -55%;
-  z-index: -1;
-  width: 48%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(240 180 72 / 0.5), rgb(240 180 72 / 0) 70%);
-}
-.cta-band__title {
-  max-width: 18ch;
-  font-size: var(--fs-h2);
-  font-weight: 350;
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-.cta-band .accent {
-  color: #ffe7b8;
-}
-.cta-band .lead {
-  margin-top: 1rem;
-  color: rgb(255 255 255 / 0.9);
-}
-@media (max-width: 899px) {
-  .cta-band {
-    grid-template-columns: 1fr;
-  }
-}
+
+
+
+
+
 
 /* ---------- Coworking : salle (aperçu), réservation en 3 étapes ---------- */
 .mini-prices {

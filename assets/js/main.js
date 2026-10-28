@@ -559,6 +559,49 @@
           go(index + (e.key === "ArrowRight" ? 1 : -1));
         }
       });
+      // Souris : on fait glisser les photos ; un glissement n'ouvre pas la visionneuse (le tactile défile nativement).
+      let startX = 0;
+      let startLeft = 0;
+      let pressed = false;
+      let dragged = false;
+      track.addEventListener("dragstart", (e) => e.preventDefault());
+      track.addEventListener("pointerdown", (e) => {
+        if (e.pointerType !== "mouse" || e.button !== 0) return;
+        pressed = true;
+        dragged = false;
+        startX = e.clientX;
+        startLeft = track.scrollLeft;
+      });
+      track.addEventListener("pointermove", (e) => {
+        if (!pressed) return;
+        const dx = e.clientX - startX;
+        if (!dragged && Math.abs(dx) > 6) {
+          dragged = true;
+          track.classList.add("is-dragging");
+          track.setPointerCapture(e.pointerId);
+        }
+        if (dragged) track.scrollLeft = startLeft - dx;
+      });
+      const release = () => {
+        if (!pressed) return;
+        pressed = false;
+        if (!dragged) return;
+        track.classList.remove("is-dragging");
+        const moved = track.scrollLeft - startLeft;
+        go(index + (Math.abs(moved) > track.clientWidth * 0.15 ? Math.sign(moved) : 0));
+      };
+      track.addEventListener("pointerup", release);
+      track.addEventListener("pointercancel", release);
+      track.addEventListener(
+        "click",
+        (e) => {
+          if (!dragged) return;
+          dragged = false;
+          e.preventDefault();
+          e.stopPropagation();
+        },
+        true
+      );
       update();
     });
   }
@@ -581,6 +624,7 @@
       if (!pic) return;
       pic.querySelectorAll("source, img").forEach((n) => n.setAttribute("sizes", "(min-width: 1200px) 82vw, 100vw"));
       const img = $("img", pic);
+      img.draggable = false;
       img.removeAttribute("loading");
       img.className = "";
       img.removeAttribute("style");
@@ -612,7 +656,12 @@
     nextBtn.addEventListener("click", () => go(index + 1));
     $$("[data-lightbox-close]", dlg).forEach((b) => b.addEventListener("click", () => dlg.close()));
     dlg.addEventListener("click", (e) => {
-      if (e.target === dlg || e.target.classList.contains("lightbox__stage")) dlg.close();
+      const stageEl = $(".lightbox__stage", dlg);
+      if (stageEl.dataset.swiped) {
+        delete stageEl.dataset.swiped;
+        return;
+      }
+      if (e.target === dlg || e.target === stageEl) dlg.close();
     });
     dlg.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") go(index + 1);
@@ -625,14 +674,24 @@
     let sx = 0;
     let sy = 0;
     const stage = $(".lightbox__stage", dlg);
+    let swiping = false;
     stage.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button")) return;
+      swiping = true;
       sx = e.clientX;
       sy = e.clientY;
+      stage.setPointerCapture(e.pointerId);
     });
     stage.addEventListener("pointerup", (e) => {
+      if (!swiping) return;
+      swiping = false;
       const dx = e.clientX - sx;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - sy)) go(index + (dx < 0 ? 1 : -1));
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(e.clientY - sy)) {
+        stage.dataset.swiped = "1"; // le clic qui suit le glissement ne ferme pas la visionneuse
+        go(index + (dx < 0 ? 1 : -1));
+      }
     });
+    stage.addEventListener("pointercancel", () => (swiping = false));
   }
 
   /* ---------- Carte Google chargée seulement à la demande (vie privée + performance) ---------- */
