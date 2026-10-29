@@ -319,7 +319,9 @@
     else addEventListener("load", () => setTimeout(run, 300), { once: true });
   }
 
-  /* ---------- Heure locale & statut d'ouverture du coworking (fuseau de La Réunion) ---------- */
+  /* ---------- Heure locale & statut d'ouverture du coworking (fuseau de La Réunion) ----------
+     L'heure part de l'horloge du serveur (en-tête Date) et non de celle de l'appareil du visiteur :
+     une horloge déréglée ou changée à la main ne fausse ni l'heure affichée ni le statut. */
   function initClock() {
     const clocks = $$("[data-clock]");
     const statuses = $$("[data-status]");
@@ -334,8 +336,9 @@
       return;
     }
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    let offset = 0; // écart entre l'horloge du serveur et celle de l'appareil (ms)
     const update = () => {
-      const now = new Date();
+      const now = new Date(Date.now() + offset);
       clocks.forEach((c) => {
         c.textContent = timeFmt.format(now);
         c.setAttribute("datetime", now.toISOString());
@@ -359,6 +362,15 @@
     };
     update();
     setInterval(update, 30000);
+    // même origine, sans corps ni cookie ; en cas d'échec, on garde l'horloge de l'appareil
+    fetch(location.pathname, { method: "HEAD", cache: "no-store", credentials: "omit" })
+      .then((res) => {
+        const server = Date.parse(res.headers.get("Date") || "");
+        if (Number.isNaN(server)) return;
+        offset = server - Date.now();
+        update();
+      })
+      .catch(() => {});
   }
 
   /* ---------- Compteurs (chiffres qui montent à l'apparition) ---------- */
