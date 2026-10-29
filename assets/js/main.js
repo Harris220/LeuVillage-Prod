@@ -109,7 +109,7 @@
         btn.focus();
       }
     });
-    matchMedia("(min-width: 1000px)").addEventListener("change", (e) => {
+    matchMedia("(min-width: 1100px)").addEventListener("change", (e) => {
       if (e.matches) setOpen(false);
     });
   }

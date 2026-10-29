@@ -418,6 +418,20 @@
   }
 
   /* ---------- Contact ---------- */
+  /* Lignes en plus dans la demande : chaque champ marqué data-row="Libellé" ajoute « Libellé : valeur » ;
+     pour un groupe de cases à cocher, la valeur est la liste des cases cochées. */
+  function extraRows(form) {
+    return $$("[data-row]", form)
+      .map((el) => {
+        let value;
+        if (el.matches("fieldset")) value = $$("input:checked", el).map((c) => c.value).join(", ");
+        else if (el.type === "date") value = longDate(el.value);
+        else value = el.value.trim();
+        return [el.dataset.row, value];
+      })
+      .filter(([, value]) => value);
+  }
+
   function initContact() {
     const form = $("form[data-contact-form]");
     if (!form) return;
@@ -433,10 +447,11 @@
       const data = Object.fromEntries(new FormData(form));
       const subjectSel = $('select[name="sujet"]', form);
       const topic = subjectSel ? subjectSel.options[subjectSel.selectedIndex].text : "Demande";
+      // data-subject et data-topic-label : formulaire de la page Événements
       deliver(form, "contact", {
-        subject: `Contact site · ${topic}`,
+        subject: `${form.dataset.subject || "Contact site"} · ${topic}`,
         intro: `Ma demande concerne : ${topic.toLowerCase()}.`,
-        rows: [["Sujet", topic]],
+        rows: [[form.dataset.topicLabel || "Sujet", topic], ...extraRows(form)],
         data,
         payload: { ...data },
       });

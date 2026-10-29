@@ -278,16 +278,33 @@ strong {
   position: relative;
   padding-block: var(--section);
 }
-/* Les bandes sable se fondent dans le crème au lieu de trancher net. */
 .section--sand {
-  --fade: clamp(3rem, 2rem + 4vw, 6.5rem);
-  background: linear-gradient(
-    180deg,
-    var(--cream) 0,
-    var(--sand) var(--fade),
-    var(--sand) calc(100% - var(--fade)),
-    var(--cream) 100%
-  );
+  background: var(--sand);
+}
+/* Section mise en avant : un seul panneau marron foncé par page, aux coins arrondis comme la
+   carte « Réserver ». Les cartes claires qu'il contient gardent leur propre couleur de texte ;
+   la classe on-night éclaircit sur-titres, accents et chapô posés directement sur le panneau. */
+.section--panel {
+  margin-inline: clamp(0.5rem, 1.5vw, 1.5rem);
+  border-radius: clamp(24px, 3vw, var(--r-xl));
+  background: var(--night);
+  color: var(--on-night);
+  isolation: isolate;
+}
+/* même grain que le pied de page */
+.section--panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.section--panel .compare__card--dark {
+  background: var(--night-2);
+  border-color: rgb(248 236 223 / 0.14);
 }
 .section--tight {
   padding-block: calc(var(--section) * 0.62);
@@ -753,6 +770,7 @@ strong {
   color: var(--ink-2);
   font-size: 0.95rem;
   font-weight: 500;
+  white-space: nowrap;
   transition: background-color var(--t-base), color var(--t-base);
 }
 .site-nav a:hover {
@@ -779,6 +797,7 @@ strong {
   color: var(--ink-2);
   font-size: 0.92rem;
   font-weight: 500;
+  white-space: nowrap;
   transition: background-color var(--t-base), color var(--t-base);
 }
 .site-header__phone:hover {
@@ -829,7 +848,9 @@ strong {
 .menu-toggle[aria-expanded="true"] .menu-toggle__bars::after {
   transform: rotate(-45deg);
 }
-@media (max-width: 1099px) {
+/* Cinq entrées de menu : le numéro passe en icône sous 1280 px, les liens se resserrent,
+   puis le menu bascule en burger sous 1100 px (seuil repris dans main.js). */
+@media (max-width: 1279px) {
   .site-header__phone span {
     display: none;
   }
@@ -838,8 +859,11 @@ strong {
     padding: 0;
     justify-content: center;
   }
+  .site-nav a {
+    padding-inline: 0.7rem;
+  }
 }
-@media (max-width: 999px) {
+@media (max-width: 1099px) {
   .site-nav {
     display: none;
   }
@@ -1760,6 +1784,7 @@ strong {
   gap: 0.8rem;
   padding: clamp(1.4rem, 1.1rem + 1vw, 2.2rem);
   background: var(--surface);
+  color: var(--ink);
   transition: background-color var(--t-base);
 }
 .feature:hover {
@@ -1900,6 +1925,7 @@ strong {
   border-radius: var(--r-xl);
   background: var(--surface);
   border: 1px solid var(--line);
+  color: var(--ink);
 }
 .compare__card--dark {
   background: var(--night);
@@ -2222,6 +2248,103 @@ strong {
 @media (max-width: 519px) {
   .site-footer__top {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Événements ---------- */
+.spaces {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 1.4vw, 20px);
+}
+.space-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.space-card__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--sand);
+}
+.space-card__media picture,
+.space-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.space-card__media img {
+  object-fit: cover;
+}
+.space-card__body {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+  padding: clamp(1.4rem, 1rem + 1.4vw, 2.4rem);
+}
+.space-card__kicker {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--coral-600);
+}
+.space-card__text,
+.step__text {
+  color: var(--ink-2);
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.step {
+  display: grid;
+  align-content: start;
+  gap: 0.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line-2);
+}
+.step__num {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--coral-600);
+}
+/* Groupe de cases à cocher dans un formulaire (espaces souhaités) */
+.field--group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.field--group legend {
+  margin-bottom: 0.75rem;
+  padding: 0;
+}
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1.25rem;
+}
+@media (max-width: 760px) {
+  .spaces,
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .check-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -3366,6 +3489,7 @@ a.contact-card:hover {
   border-radius: var(--r-lg);
   background: var(--surface);
   border: 1px solid var(--line);
+  color: var(--ink);
   transition: background-color var(--t-base), color var(--t-base), transform 0.6s var(--ease-out);
 }
 .use:hover {
@@ -3423,6 +3547,7 @@ a.contact-card:hover {
   background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: var(--sh-2);
+  color: var(--ink);
 }
 .calc__result {
   display: grid;
