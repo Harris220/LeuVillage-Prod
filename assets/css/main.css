@@ -278,8 +278,16 @@ strong {
   position: relative;
   padding-block: var(--section);
 }
+/* Les bandes sable se fondent dans le crème au lieu de trancher net. */
 .section--sand {
-  background: var(--sand);
+  --fade: clamp(3rem, 2rem + 4vw, 6.5rem);
+  background: linear-gradient(
+    180deg,
+    var(--cream) 0,
+    var(--sand) var(--fade),
+    var(--sand) calc(100% - var(--fade)),
+    var(--cream) 100%
+  );
 }
 .section--tight {
   padding-block: calc(var(--section) * 0.62);
