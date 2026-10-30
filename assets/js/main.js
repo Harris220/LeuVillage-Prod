@@ -572,109 +572,133 @@
           go(index + (e.key === "ArrowRight" ? 1 : -1));
         }
       });
-      // Souris : on fait glisser les photos ; un glissement n'ouvre pas la visionneuse (le tactile défile nativement).
-      let startX = 0;
-      let startLeft = 0;
-      let pressed = false;
-      let dragged = false;
-      track.addEventListener("dragstart", (e) => e.preventDefault());
-      track.addEventListener("pointerdown", (e) => {
-        if (e.pointerType !== "mouse" || e.button !== 0) return;
-        pressed = true;
-        dragged = false;
-        startX = e.clientX;
-        startLeft = track.scrollLeft;
-      });
-      track.addEventListener("pointermove", (e) => {
-        if (!pressed) return;
-        const dx = e.clientX - startX;
-        if (!dragged && Math.abs(dx) > 6) {
-          dragged = true;
-          track.classList.add("is-dragging");
-          track.setPointerCapture(e.pointerId);
-        }
-        if (dragged) track.scrollLeft = startLeft - dx;
-      });
-      const release = () => {
-        if (!pressed) return;
-        pressed = false;
-        if (!dragged) return;
-        track.classList.remove("is-dragging");
-        const moved = track.scrollLeft - startLeft;
-        go(index + (Math.abs(moved) > track.clientWidth * 0.15 ? Math.sign(moved) : 0));
-      };
-      track.addEventListener("pointerup", release);
-      track.addEventListener("pointercancel", release);
-      track.addEventListener(
-        "click",
-        (e) => {
-          if (!dragged) return;
-          dragged = false;
-          e.preventDefault();
-          e.stopPropagation();
-        },
-        true
-      );
+      dragScroll(track, () => index, go);
       update();
     });
+  }
+
+  /* Souris : on fait glisser les photos d'une piste ; un glissement ne compte pas comme un clic (le tactile défile nativement). */
+  function dragScroll(track, current, go) {
+    let startX = 0;
+    let startLeft = 0;
+    let startIndex = 0;
+    let pressed = false;
+    let dragged = false;
+    track.addEventListener("dragstart", (e) => e.preventDefault());
+    track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      pressed = true;
+      dragged = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      startIndex = current();
+    });
+    track.addEventListener("pointermove", (e) => {
+      if (!pressed) return;
+      const dx = e.clientX - startX;
+      if (!dragged && Math.abs(dx) > 6) {
+        dragged = true;
+        track.classList.add("is-dragging");
+        track.setPointerCapture(e.pointerId);
+      }
+      if (dragged) track.scrollLeft = startLeft - dx;
+    });
+    const release = () => {
+      if (!pressed) return;
+      pressed = false;
+      if (!dragged) return;
+      const moved = track.scrollLeft - startLeft;
+      go(startIndex + (Math.abs(moved) > track.clientWidth * 0.15 ? Math.sign(moved) : 0));
+      // l'aimantation reste coupée jusqu'à la fin du défilement, sinon elle ramènerait aussitôt la photo de départ
+      const settle = () => {
+        if (!pressed) track.classList.remove("is-dragging");
+      };
+      track.addEventListener("scrollend", settle, { once: true });
+      setTimeout(settle, 700);
+    };
+    track.addEventListener("pointerup", release);
+    track.addEventListener("pointercancel", release);
+    track.addEventListener(
+      "click",
+      (e) => {
+        if (!dragged) return;
+        dragged = false;
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      true
+    );
   }
 
   /* ---------- Visionneuse plein écran (clone d'images déjà présentes dans la page) ---------- */
   function initLightbox() {
     const dlg = $("#lightbox");
     if (!dlg || typeof dlg.showModal !== "function") return;
-    const figure = $(".lightbox__figure", dlg);
+    const track = $(".lightbox__track", dlg);
     const countEl = $(".lightbox__count", dlg);
     const titleEl = $(".lightbox__title", dlg);
     const capEl = $(".lightbox__caption", dlg);
     const prevBtn = $(".lightbox__prev", dlg);
     const nextBtn = $(".lightbox__next", dlg);
-    let items = [];
+    let slides = [];
     let index = 0;
     let opener = null;
-    const render = () => {
-      const pic = $("picture", items[index])?.cloneNode(true);
-      if (!pic) return;
+    const pad = (n) => String(n).padStart(2, "0");
+    // Une diapositive par photo du groupe : la piste défile au doigt, comme les mini-galeries
+    const slideFor = (item, i) => {
+      const slide = document.createElement("figure");
+      slide.className = "lightbox__slide";
+      const pic = $("picture", item)?.cloneNode(true);
+      if (!pic) return slide;
       pic.querySelectorAll("source, img").forEach((n) => n.setAttribute("sizes", "(min-width: 1200px) 82vw, 100vw"));
       const img = $("img", pic);
       img.draggable = false;
-      img.removeAttribute("loading");
+      img.loading = Math.abs(i - index) <= 1 ? "eager" : "lazy";
       img.className = "";
       img.removeAttribute("style");
-      figure.replaceChildren(pic);
-      const pad = (n) => String(n).padStart(2, "0");
-      countEl.textContent = `${pad(index + 1)} / ${pad(items.length)}`;
-      capEl.textContent = img.alt || "";
-      prevBtn.hidden = items.length < 2;
-      nextBtn.hidden = items.length < 2;
+      slide.append(pic);
+      return slide;
     };
-    const go = (n) => {
-      index = (n + items.length) % items.length;
-      render();
+    const update = () => {
+      if (!slides.length) return; // visionneuse fermée entre-temps
+      index = clamp(Math.round(track.scrollLeft / Math.max(1, track.clientWidth)), 0, slides.length - 1);
+      countEl.textContent = `${pad(index + 1)} / ${pad(slides.length)}`;
+      capEl.textContent = $("img", slides[index])?.alt || "";
+      prevBtn.disabled = index <= 0;
+      nextBtn.disabled = index >= slides.length - 1;
+      // les photos voisines se chargent d'avance, pour un glissement sans trou
+      slides.slice(Math.max(0, index - 1), index + 2).forEach((s) => {
+        const img = $("img", s);
+        if (img) img.loading = "eager";
+      });
     };
+    const go = (n) => track.scrollTo({ left: clamp(n, 0, slides.length - 1) * track.clientWidth, behavior: reduceMotion() ? "auto" : "smooth" });
     document.addEventListener("click", (e) => {
       const trigger = e.target.closest("[data-lightbox]");
       if (!trigger) return;
       e.preventDefault();
       const group = trigger.dataset.lightbox;
-      items = $$("[data-lightbox]").filter((el) => el.dataset.lightbox === group);
+      const items = $$("[data-lightbox]").filter((el) => el.dataset.lightbox === group);
       index = Math.max(0, items.indexOf(trigger));
       opener = trigger;
       titleEl.textContent = trigger.dataset.title || "";
-      render();
+      slides = items.map(slideFor);
+      track.replaceChildren(...slides);
+      prevBtn.hidden = slides.length < 2;
+      nextBtn.hidden = slides.length < 2;
       dlg.showModal();
       document.body.classList.add("no-scroll");
+      track.scrollLeft = index * track.clientWidth;
+      update();
     });
     prevBtn.addEventListener("click", () => go(index - 1));
     nextBtn.addEventListener("click", () => go(index + 1));
+    track.addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
+    dragScroll(track, () => index, go);
     $$("[data-lightbox-close]", dlg).forEach((b) => b.addEventListener("click", () => dlg.close()));
+    // Un clic à côté de la photo ferme la visionneuse ; un clic sur la photo ne fait rien
     dlg.addEventListener("click", (e) => {
-      const stageEl = $(".lightbox__stage", dlg);
-      if (stageEl.dataset.swiped) {
-        delete stageEl.dataset.swiped;
-        return;
-      }
-      if (e.target === dlg || e.target === stageEl) dlg.close();
+      if (e.target === dlg || e.target.matches(".lightbox__stage, .lightbox__track, .lightbox__slide")) dlg.close();
     });
     dlg.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") go(index + 1);
@@ -682,29 +706,10 @@
     });
     dlg.addEventListener("close", () => {
       document.body.classList.remove("no-scroll");
+      track.replaceChildren();
+      slides = [];
       opener?.focus({ preventScroll: true });
     });
-    let sx = 0;
-    let sy = 0;
-    const stage = $(".lightbox__stage", dlg);
-    let swiping = false;
-    stage.addEventListener("pointerdown", (e) => {
-      if (e.target.closest("button")) return;
-      swiping = true;
-      sx = e.clientX;
-      sy = e.clientY;
-      stage.setPointerCapture(e.pointerId);
-    });
-    stage.addEventListener("pointerup", (e) => {
-      if (!swiping) return;
-      swiping = false;
-      const dx = e.clientX - sx;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(e.clientY - sy)) {
-        stage.dataset.swiped = "1"; // le clic qui suit le glissement ne ferme pas la visionneuse
-        go(index + (dx < 0 ? 1 : -1));
-      }
-    });
-    stage.addEventListener("pointercancel", () => (swiping = false));
   }
 
   /* ---------- Carte Google chargée seulement à la demande (vie privée + performance) ---------- */

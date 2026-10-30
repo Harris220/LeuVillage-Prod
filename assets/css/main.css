@@ -691,6 +691,10 @@ strong {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+.chips__break {
+  flex-basis: 100%;
+  height: 0;
+}
 
 /* ---------- En-tête ---------- */
 .site-header {
@@ -2884,24 +2888,42 @@ strong {
 }
 .lightbox__stage {
   position: relative;
-  display: grid;
-  place-items: center;
   min-height: 0;
-  padding-inline: clamp(0.5rem, 5vw, 6rem);
-  touch-action: pan-y;
 }
-.lightbox__figure {
+/* Une piste horizontale à défilement natif : le doigt fait glisser les photos, comme dans les fiches */
+.lightbox__track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.lightbox__track.is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+.lightbox__track::-webkit-scrollbar {
+  display: none;
+}
+.lightbox__slide {
   display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
+  flex: 0 0 100%;
   margin: 0;
+  padding-inline: clamp(0.5rem, 5vw, 6rem);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
 }
-.lightbox__figure picture {
+.lightbox__slide picture {
   display: contents;
 }
-.lightbox__stage img {
+.lightbox__slide source {
+  display: none; /* avec display: contents, chaque <source> prendrait une ligne de la grille et décalerait la photo */
+}
+.lightbox__slide img {
   -webkit-user-drag: none;
   user-select: none;
   max-width: 100%;
@@ -2948,11 +2970,10 @@ strong {
   font-size: var(--fs-sm);
 }
 @media (max-width: 599px) {
-  .lightbox__prev,
-  .lightbox__next {
-    top: auto;
-    bottom: -3.75rem;
-    transform: none;
+  .lightbox .lightbox__prev,
+  .lightbox .lightbox__next {
+    width: 44px;
+    height: 44px;
   }
 }
 
