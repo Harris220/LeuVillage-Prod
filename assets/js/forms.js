@@ -19,6 +19,7 @@
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
   const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
   const euro = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
+  const cents = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
   const phone = (window.LEU_CONFIG && window.LEU_CONFIG.contact && window.LEU_CONFIG.contact.phone) || "+262 693 02 57 57";
 
@@ -262,12 +263,15 @@
     if (!request.apiEnabled(kind)) {
       if (kind !== "contact") return;
       const body = buildRequestText({ intro, rows, data });
+      const mail = { ...request.mailtoHref({ subject, body }), body };
       showPanel(form, {
-        title: `${first ? `${first}, votre` : "Votre"} demande est prête`,
-        text: "Cliquez sur « Ouvrir ma messagerie » : un e-mail pré-rempli à destination de Leu Village s’ouvre. Il ne part qu’une fois que vous cliquez sur Envoyer dans votre messagerie.",
+        title: `${first ? `${first}, votre` : "Votre"} e-mail est prêt`,
+        text: "Votre messagerie s’ouvre avec la demande pré-remplie : il suffit de cliquer sur Envoyer. Rien ne s’est ouvert ? Utilisez les boutons ci-dessous ou appelez-nous.",
         rows,
-        mail: { ...request.mailtoHref({ subject, body }), body },
+        mail,
       });
+      // le bouton s'appelle « Ouvrir mon e-mail pré-rempli » : on ouvre la messagerie tout de suite
+      window.location.href = mail.href;
       return;
     }
     const btn = $('[type="submit"]', form);
@@ -371,13 +375,16 @@
         }
         const keys = Array.from(booking.querySelectorAll(".summary [data-out]"))
           .map((el) => el.dataset.out)
-          .filter((k) => k !== "total");
+          .filter((k) => k !== "total" && k !== "ttc");
         rows.forEach(([, value], i) => {
           const el = keys[i] ? out(keys[i]) : null;
           if (el) el.textContent = value;
         });
         const totalEl = out("total");
         if (totalEl) tweenNumber(totalEl, total);
+        // équivalent TTC (TVA à La Réunion : 8,5 %)
+        const ttcEl = out("ttc");
+        if (ttcEl) ttcEl.textContent = cents.format(Math.round(total * 108.5) / 100);
         return { data, total, rows };
       };
 

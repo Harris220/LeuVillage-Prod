@@ -18,6 +18,7 @@
   const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
   const lerp = (a, b, t) => a + (b - a) * t;
   const euro = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
+  const cents = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   /* ---------- Boucle de défilement unique (rAF) ---------- */
   const scrollSubs = new Set();
@@ -825,6 +826,7 @@
     $$("[data-calc]").forEach((wrap) => {
       const amount = $("[data-calc-amount]", wrap);
       const rate = $("[data-calc-rate]", wrap);
+      const ttcLine = $("[data-calc-ttc]", wrap);
       const label = $("[data-calc-label]", wrap);
       const cta = $("[data-calc-cta]", wrap);
       const tween = (to) => {
@@ -853,7 +855,10 @@
         const price = Number(input.dataset.price);
         const hours = Number(input.dataset.hours);
         tween(price);
-        if (rate) rate.textContent = `soit ${euro.format(price / hours)} € HT de l’heure`;
+        const perHour = price / hours;
+        if (rate) rate.textContent = `${(Number.isInteger(perHour) ? euro : cents).format(perHour)} € HT de l’heure`;
+        // équivalent TTC (TVA à La Réunion : 8,5 %)
+        if (ttcLine) ttcLine.textContent = `soit ${cents.format(Math.round(price * 108.5) / 100)} € TTC`;
         if (label) label.textContent = input.dataset.label;
         if (cta && /^(1h|4h|8h)$/.test(input.value)) cta.href = `reserver.html?offre=salle&duree=${input.value}`;
       };

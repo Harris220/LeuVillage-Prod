@@ -26,8 +26,8 @@
 <link rel="preload" href="assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
 
-<link rel="stylesheet" href="assets/css/main.css">
-<script src="assets/js/main.js" defer></script>
+<link rel="stylesheet" href="assets/css/main.css?v=c425eb6021">
+<script src="assets/js/main.js?v=c85dc43ef6" defer></script>
 
 </head>
 <body id="top">
@@ -92,7 +92,7 @@
     </div>
     <div class="page-hero__media">
       <div class="page-hero__frame d-1" data-intro-img><picture><source type="image/avif" srcset="images/coworking-reunion-480.avif 480w, images/coworking-reunion-800.avif 800w, images/coworking-reunion-1024.avif 1024w" sizes="(min-width: 900px) 44vw, 92vw"><source type="image/webp" srcset="images/coworking-reunion-480.webp 480w, images/coworking-reunion-800.webp 800w, images/coworking-reunion-1024.webp 1024w" sizes="(min-width: 900px) 44vw, 92vw"><img src="images/coworking-reunion-800.webp" width="1024" height="1024" alt="Image d’illustration : petite équipe en réunion autour d’une grande table en bois, ordinateurs ouverts" fetchpriority="high" decoding="async"></picture><span class="media-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Image d’illustration</span></div>
-      <p class="page-hero__tag d-4" data-intro><strong>30 € HT</strong><span>l’heure de réunion</span></p>
+      <p class="page-hero__tag d-4" data-intro><strong>30 € HT / heure</strong><span>soit 32,55 € TTC</span></p>
       
 <div class="badge-spin" aria-hidden="true">
   <svg viewBox="0 0 120 120"><defs><path id="badge-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs><text><textPath href="#badge-circle" textLength="286" lengthAdjust="spacing">Leu Village • Saint-Leu • La Réunion •</textPath></text></svg>
@@ -129,12 +129,13 @@
             <label><input type="radio" name="duree-calc" value="1h" data-price="30" data-hours="1" data-label="1 heure">1 heure</label><label><input type="radio" name="duree-calc" value="4h" data-price="90" data-hours="4" data-label="Demi-journée · 4 h" checked>Demi-journée</label><label><input type="radio" name="duree-calc" value="8h" data-price="180" data-hours="8" data-label="Journée · 8 h">Journée</label>
           </div>
         </fieldset>
-        <p class="muted">Tarifs hors taxes, sur les horaires d’ouverture (7h – 18h, du lundi au vendredi). Le bureau fixe inclut 2 heures de salle par mois.</p>
+        <p class="muted">Tarifs hors taxes, sur les horaires d’ouverture (7h – 18h, du lundi au vendredi, hors jours fériés). Le bureau fixe inclut 2 heures de salle par mois.</p>
       </div>
       <div class="calc__result" aria-live="polite">
         <p class="eyebrow eyebrow--dot" data-calc-label>Demi-journée · 4 h</p>
         <p class="price-big"><span class="price-big__amount" data-calc-amount>90</span><span class="price-big__unit">€ HT</span></p>
-        <p class="muted" data-calc-rate>soit 22,50 € HT de l’heure</p>
+        <p class="calc__ttc" data-calc-ttc>soit 97,65 € TTC</p>
+        <p class="muted" data-calc-rate>22,50 € HT de l’heure</p>
         <div class="btn-row"><a class="btn btn--primary" href="reserver.html?offre=salle&amp;duree=4h" data-calc-cta aria-label="Réserver ce créneau"><span class="btn__label"><span class="btn__text" data-label="Réserver ce créneau">Réserver ce créneau</span></span><span class="btn__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a></div>
       </div>
     </div>
@@ -149,8 +150,9 @@
       <p class="lead" data-reveal>Un cadre agréable et équipé, au cœur d’un espace de coworking qui vous offre aussi la cuisine, le café et la terrasse pour les pauses.</p>
       <ul class="checks checks--cols" data-stagger>
         <li>Capacité de 6 à 8 personnes</li>
+        <li>Écran pour vos présentations</li>
         <li>Adaptée aux visioconférences</li>
-        <li>Accès internet inclus</li>
+        <li>Connexion fibre incluse</li>
         <li>Cuisine équipée & café</li>
         <li>Terrasse pour les pauses</li>
         <li>Parking privé</li>
@@ -183,7 +185,7 @@
   </details>
   <details class="faq__item" name="faq-salle">
     <summary><span>Quels sont les horaires de réservation ?</span><span class="faq__icon" aria-hidden="true"></span></summary>
-    <div class="faq__answer"><p>La salle se réserve sur les horaires d’ouverture de l’espace, de 7h à 18h, du lundi au vendredi.</p></div>
+    <div class="faq__answer"><p>La salle se réserve sur les horaires d’ouverture de l’espace, de 7h à 18h, du lundi au vendredi, hors jours fériés.</p></div>
   </details>
   <details class="faq__item" name="faq-salle">
     <summary><span>La salle est-elle incluse avec le bureau fixe ?</span><span class="faq__icon" aria-hidden="true"></span></summary>
