@@ -1523,6 +1523,15 @@ strong {
     --cols: 1;
   }
 }
+/* Formules d'événement : deux colonnes, pour garder titres et prix sur une ligne */
+.prices--2 {
+  --cols: 2;
+}
+@media (max-width: 639px) {
+  .prices--2 {
+    --cols: 1;
+  }
+}
 .price-card {
   position: relative;
   display: flex;
@@ -1566,6 +1575,15 @@ strong {
   letter-spacing: -0.045em;
   color: var(--ink);
   font-variant-numeric: tabular-nums lining-nums;
+}
+.price-card__quote {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 1.6rem + 1.2vw, 2.6rem);
+  font-weight: 350;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--ink);
 }
 .price-card__amount sup {
   font-size: 0.45em;
@@ -2274,8 +2292,22 @@ strong {
 .space-card__media--trio > picture:first-child {
   grid-row: 1 / -1;
 }
-.spaces + .note-box {
-  margin-top: clamp(12px, 1.4vw, 20px);
+/* Formules : l'encadré « sur mesure » sous les cartes */
+.formula-custom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem 2.5rem;
+  margin-top: clamp(12px, 1.2vw, 18px);
+  padding: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+}
+.formula-custom p {
+  max-width: 72ch;
+  color: var(--ink-2);
 }
 .space-card__body {
   display: grid;
@@ -2316,30 +2348,10 @@ strong {
   line-height: 1;
   color: var(--coral-600);
 }
-/* Groupe de cases à cocher dans un formulaire (espaces souhaités) */
-.field--group {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.field--group legend {
-  margin-bottom: 0.75rem;
-  padding: 0;
-}
-.check-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem 1.25rem;
-}
 @media (max-width: 760px) {
   .spaces,
-  .steps {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-@media (max-width: 520px) {
-  .check-grid {
+  .steps,
+  .formula-custom {
     grid-template-columns: minmax(0, 1fr);
   }
 }

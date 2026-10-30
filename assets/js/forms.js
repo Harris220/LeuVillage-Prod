@@ -419,12 +419,13 @@
 
   /* ---------- Contact ---------- */
   /* Lignes en plus dans la demande : chaque champ marqué data-row="Libellé" ajoute « Libellé : valeur » ;
-     pour un groupe de cases à cocher, la valeur est la liste des cases cochées. */
+     pour une liste, la valeur est le texte du choix ; pour un groupe de cases, la liste des cases cochées. */
   function extraRows(form) {
     return $$("[data-row]", form)
       .map((el) => {
         let value;
         if (el.matches("fieldset")) value = $$("input:checked", el).map((c) => c.value).join(", ");
+        else if (el.matches("select")) value = el.value ? el.options[el.selectedIndex].text : "";
         else if (el.type === "date") value = longDate(el.value);
         else value = el.value.trim();
         return [el.dataset.row, value];
@@ -436,6 +437,12 @@
     const form = $("form[data-contact-form]");
     if (!form) return;
     wireLiveValidation(form);
+    // ?formule=… (boutons des formules de la page Événements) : présélectionne le choix s'il existe
+    const params = new URLSearchParams(location.search);
+    $$("select[data-from-url]", form).forEach((sel) => {
+      const wanted = params.get(sel.dataset.fromUrl);
+      if (wanted && $$("option", sel).some((o) => o.value === wanted)) sel.value = wanted;
+    });
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const errors = validateForm(form);
