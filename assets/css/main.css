@@ -1046,10 +1046,13 @@ strong {
   object-fit: cover;
   transform: scale(1.1);
 }
-.hero__slide.is-active img {
+/* is-leaving : la photo qui s'efface garde son zoom, sinon elle saute à sa taille de départ */
+.hero__slide.is-active img,
+.hero__slide.is-leaving img {
   animation: kenburns 10s var(--ease-out) forwards;
 }
-.hero__slide:first-child.is-active img {
+.hero__slide:first-child.is-active img,
+.hero__slide:first-child.is-leaving img {
   animation-name: kenburns-first;
 }
 .hero::before,

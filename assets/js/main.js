@@ -276,8 +276,9 @@
       remaining = Math.max(400, remaining - (performance.now() - startedAt));
     };
     const show = (n) => {
-      slides[index].classList.remove("is-active");
+      slides[index].classList.replace("is-active", "is-leaving");
       index = (n + slides.length) % slides.length;
+      slides[index].classList.remove("is-leaving");
       slides[index].classList.add("is-active");
       bars.forEach((bar, i) => {
         bar.classList.remove("is-active");
@@ -292,6 +293,11 @@
       hero.dispatchEvent(new Event("hero:slide"));
       schedule(DURATION);
     };
+    slides.forEach((slide) =>
+      slide.addEventListener("transitionend", (e) => {
+        if (e.target === slide) slide.classList.remove("is-leaving");
+      })
+    );
     bars.forEach((bar, i) => bar.addEventListener("click", () => show(i)));
     pauseBtn?.addEventListener("click", () => {
       paused = !paused;
