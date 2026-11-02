@@ -329,6 +329,7 @@
     if (!scene || reduceMotion() || !scene.animate) return;
     const OPEN_MS = 2600; // durée de l'ouverture, quelle que soit la vitesse du défilement
     const CLOSE_MS = 1700; // durée de la fermeture
+    const COLLAPSE_MS = 280; // un panneau élargi par le survol reprend sa place avant que les volets se referment
     const LAND = 0.88; // la phrase est arrivée : les titres des panneaux prennent le relais
     const SAMPLES = 52; // points calculés sur chaque courbe
     const RAD = Math.PI / 180;
@@ -503,9 +504,18 @@
     };
     const close = () => {
       if (state !== STATE.open) return;
+      state = STATE.moving;
+      const expanded = duo.querySelector(".duo__panel:hover, .duo__panel:focus-within");
+      if (duo.contains(document.activeElement)) document.activeElement.blur();
       copyPhoto();
       scene.classList.remove("is-landed");
-      play(false);
+      // Le titre du panneau doit être revenu à sa place : c'est là que la phrase prend le relais
+      if (expanded) {
+        root.classList.add("scene-moving");
+        setTimeout(() => scenePinned && play(false), COLLAPSE_MS);
+      } else {
+        play(false);
+      }
     };
     /* Page déjà descendue (rechargement, ancre) : les panneaux sont là, sans animation */
     const openAtOnce = () => {
