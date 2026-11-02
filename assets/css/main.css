@@ -3837,18 +3837,13 @@ a.contact-card:hover {
 
 /* ---------- Accueil : le hero s'ouvre en deux volets et découvre les deux univers ---------- */
 /* Base (sans JS, « réduire les animations », écran très bas) : le hero, puis les deux panneaux.
-   .scene--pinned est posée par main.js : l'image reste en place pendant que la page défile.
+   .scene--pinned est posée par main.js : hero et panneaux se partagent le même écran.
    Tout ce qui bouge a son propre calque : le navigateur ne repeint rien pendant l'animation. */
-.scene--pinned {
-  position: relative;
-  height: 238vh;
-  background: var(--night);
-}
 .scene--pinned .scene__stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100vh;
   overflow: clip;
+  background: var(--night);
 }
 .scene--pinned .hero {
   position: absolute;
@@ -3863,6 +3858,7 @@ a.contact-card:hover {
 /* Une fois ouvert, le hero laisse la place aux volets : seule la phrase reste */
 .scene--pinned.is-open .hero {
   background: transparent;
+  pointer-events: none;
 }
 .scene--pinned.is-open .hero__media {
   visibility: hidden;
@@ -3880,14 +3876,32 @@ a.contact-card:hover {
 .scene--pinned .hero__meta {
   will-change: opacity, transform;
 }
-.scene--pinned.is-past-intro .hero {
-  pointer-events: none;
-}
-.scene--pinned.is-past-intro .hero__content > .chip,
-.scene--pinned.is-past-intro .hero__lead,
-.scene--pinned.is-past-intro .hero__actions,
-.scene--pinned.is-past-intro .hero__meta {
+.scene--pinned.is-landed .hero__content > .chip,
+.scene--pinned.is-landed .hero__lead,
+.scene--pinned.is-landed .hero__actions,
+.scene--pinned.is-landed .hero__meta {
   visibility: hidden;
+}
+/* Téléphones peu hauts : le hero tient entier à l'écran, puisque le premier geste lance l'animation */
+@media (max-width: 699px) and (max-height: 720px) {
+  .scene--pinned .hero__inner {
+    padding-top: calc(var(--header-top) + var(--header-h) + 1.1rem);
+  }
+  .scene--pinned .hero__content > .chip {
+    margin-bottom: 1rem;
+  }
+  .scene--pinned .hero__lead {
+    margin-top: 0.9rem;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .scene--pinned .hero__actions {
+    margin-top: 1rem;
+  }
+  .scene--pinned .hero__meta {
+    margin-top: 1rem;
+    padding-top: 0.7rem;
+  }
 }
 /* La phrase voyage jusqu'aux panneaux, puis leurs titres prennent le relais */
 .scene--pinned .hero__title {
@@ -3901,11 +3915,8 @@ a.contact-card:hover {
   opacity: 0;
 }
 
-/* Le menu reste visible pendant la scène ; sans flou derrière lui tant que l'image bouge */
-html.in-scene .site-header.is-hidden .site-header__bar {
-  transform: none;
-}
-html.in-scene.scene-open .site-header__bar {
+/* Pas de flou derrière le menu tant que l'image bouge */
+html.scene-moving .site-header__bar {
   background: rgb(251 244 234 / 0.95);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;

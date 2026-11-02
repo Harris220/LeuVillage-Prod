@@ -225,7 +225,7 @@
   }
 
   /* ---------- Hero : diaporama + profondeur au défilement ---------- */
-  let scenePinned = false; // le hero est dans la scène épinglée de l'accueil (voir initScene)
+  let scenePinned = false; // le hero appartient à la scène de l'accueil (voir initScene)
   function initHero() {
     const hero = $("[data-hero]");
     if (!hero) return;
@@ -236,7 +236,7 @@
 
     if (!reduceMotion() && media && inner) {
       scrollSubs.add((y) => {
-        if (scenePinned || y > heroH * 1.1) return; // dans la scène épinglée, c'est initScene qui anime le hero
+        if (scenePinned || y > heroH * 1.1) return; // dans la scène, c'est initScene qui anime le hero
         const p = clamp(y / heroH, 0, 1);
         media.style.transform = `translate3d(0, ${(y * 0.32).toFixed(1)}px, 0)`;
         inner.style.opacity = String(clamp(1 - p * 1.35, 0, 1));
@@ -318,26 +318,29 @@
   }
 
   /* ---------- Accueil : le hero s'ouvre en deux volets, la phrase rejoint les deux panneaux ----------
-     La page défile normalement : seule l'image reste en place (position: sticky).
-     Pour rester fluide : la progression suit le défilement avec un léger amorti, pour que la molette
-     ne fasse pas avancer l'animation par à-coups ; chaque image ne modifie que transform et opacity,
-     sur des calques déjà prêts, et seulement ce qui a changé.
+     Le défilement ne fait que déclencher l'animation : elle dure toujours le même temps, qu'on défile
+     vite ou lentement, et la page ne bouge pas pendant qu'elle se joue. Ensuite, le défilement reprend
+     normalement ; revenu tout en haut de la page, un geste vers le haut referme les volets.
+     Pour rester fluide : l'animation est confiée au navigateur (Web Animations, transform et opacity
+     uniquement, sur des calques déjà prêts) et ne dépend pas du script pendant qu'elle se joue.
      Sans JS, avec « réduire les animations » ou sur un écran très bas : le hero, puis les panneaux. */
   function initScene() {
     const scene = $("[data-scene]");
-    if (!scene || reduceMotion()) return;
-    const TRAVEL = 1.12; // distance de l'animation, en hauteurs d'écran (le reste de la scène sert de pause)
+    if (!scene || reduceMotion() || !scene.animate) return;
+    const OPEN_MS = 2600; // durée de l'ouverture, quelle que soit la vitesse du défilement
+    const CLOSE_MS = 1700; // durée de la fermeture
     const LAND = 0.88; // la phrase est arrivée : les titres des panneaux prennent le relais
-    const SMOOTHING = 130; // amorti de la progression, en millisecondes
+    const SAMPLES = 52; // points calculés sur chaque courbe
     const RAD = Math.PI / 180;
     const seg = (p, a, b) => clamp((p - a) / (b - a), 0, 1);
     const smooth = (t) => t * t * (3 - 2 * t);
     const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (2 - 2 * t) ** 3 / 2);
 
-    const stage = $(".scene__stage", scene);
     const hero = $("[data-hero]", scene);
     const duo = $(".duo", scene);
-    const lines = $$(".hero__title .line", hero);
+    const title = $(".hero__title", hero);
+    const lines = $$(".line", title);
+    const headings = $$(".duo__word", duo);
     const words = $$(".duo__word .line", duo);
     const fading = $$(".hero__content > .chip, .hero__lead, .hero__actions, .hero__meta", hero);
     const revealing = $$(".duo__sub, .duo__actions", duo);
@@ -367,16 +370,6 @@
     const veil = span("duo-veil");
     veil.setAttribute("aria-hidden", "true");
 
-    /* Écriture d'un style seulement s'il a changé (priorité sur l'animation d'entrée du hero si besoin) */
-    const written = new Map();
-    const put = (el, prop, value, priority = "") => {
-      let values = written.get(el);
-      if (!values) written.set(el, (values = {}));
-      if (values[prop] === value) return;
-      values[prop] = value;
-      el.style.setProperty(prop, value, priority);
-    };
-
     const activeImg = () => $(".hero__slide.is-active img", hero);
     const syncDoors = () => {
       const url = activeImg()?.currentSrc;
@@ -388,98 +381,48 @@
         img.decode?.().catch(() => {});
       });
     };
-
-    let opened = false;
-    const setOpen = (open) => {
-      if (open === opened) return;
-      opened = open;
-      if (open) {
-        // Les volets reprennent exactement la photo du hero, avec son zoom du moment
-        syncDoors();
-        const zoom = getComputedStyle(activeImg()).transform;
-        left.img.style.transform = zoom;
-        right.img.style.transform = zoom;
-      }
-      scene.classList.toggle("is-open", open);
-      root.classList.toggle("scene-open", open);
-      hero.dispatchEvent(new CustomEvent("scene:covered", { detail: open }));
+    /* Les volets reprennent exactement la photo du hero, avec son zoom du moment */
+    const copyPhoto = () => {
+      const photo = activeImg();
+      if (!photo) return;
+      syncDoors();
+      const zoom = getComputedStyle(photo).transform;
+      left.img.style.transform = zoom;
+      right.img.style.transform = zoom;
     };
 
-    let flights = [];
-    const fly = (p) => {
-      // Panneaux côte à côte : la seconde moitié glisse d'abord de côté en rétrécissant, puis les deux descendent.
-      // Elles suivent ainsi un arc, restent dans l'écran et ne se chevauchent jamais.
-      const sideBySide = flights.some((f) => Math.abs(f.dx) > 120);
-      flights.forEach((f, i) => {
-        const x = sideBySide ? inOut(seg(p, 0.05, 0.58)) : 1;
-        const y = inOut(sideBySide ? seg(p, 0.36 + i * 0.04, LAND) : seg(p, 0.04 + i * 0.03, LAND));
-        const s = 1 + (f.scale - 1) * (sideBySide ? x : y);
-        put(f.line, "transform", `translate3d(${(f.dx * x).toFixed(2)}px, ${(f.dy * y).toFixed(2)}px, 0) scale(${s.toFixed(4)})`);
-      });
-    };
+    /* Une piste par élément : chaque courbe est calculée à l'avance, puis jouée par le navigateur */
+    let tracks = [];
+    const track = (el, at) =>
+      tracks.push(el.animate(Array.from({ length: SAMPLES + 1 }, (_, i) => ({ offset: i / SAMPLES, ...at(i / SAMPLES) })), { duration: OPEN_MS, fill: "both" }));
+    const swap = (el, from, to) =>
+      tracks.push(
+        el.animate(
+          [
+            { offset: 0, opacity: from },
+            { offset: LAND, opacity: from },
+            { offset: LAND, opacity: to },
+            { offset: 1, opacity: to },
+          ],
+          { duration: OPEN_MS, fill: "both" }
+        )
+      );
+    const doorAngle = (p) => 96 * inOut(seg(p, 0.08, 0.86));
 
-    const draw = (p) => {
-      setOpen(p > 0.002);
-      scene.classList.toggle("is-past-intro", p > 0.16);
-      scene.classList.toggle("is-landed", p >= LAND);
-
-      const fade = (1 - seg(p, 0, 0.14)).toFixed(3);
-      const rise = `translate3d(0, ${(-36 * seg(p, 0, 0.16)).toFixed(1)}px, 0)`;
-      fading.forEach((el) => {
-        put(el, "opacity", fade, "important");
-        put(el, "transform", rise, "important");
-      });
-
-      const angle = 96 * inOut(seg(p, 0.08, 0.86));
-      const shade = Math.sin(Math.min(angle, 90) * RAD).toFixed(3);
-      put(left.el, "transform", `rotateY(${(-angle).toFixed(2)}deg)`);
-      put(right.el, "transform", `rotateY(${angle.toFixed(2)}deg)`);
-      put(left.shade, "opacity", shade);
-      put(right.shade, "opacity", shade);
-
-      put(duo, "transform", `scale(${(0.94 + 0.06 * smooth(seg(p, 0.08, 0.72))).toFixed(4)})`);
-      put(veil, "opacity", (0.72 * (1 - smooth(seg(p, 0.2, 0.9)))).toFixed(3));
-
-      const shown = seg(p, 0.76, 0.99);
-      revealing.forEach((el) => {
-        put(el, "opacity", shown.toFixed(3));
-        put(el, "transform", `translate3d(0, ${(22 * (1 - shown)).toFixed(1)}px, 0)`);
-      });
-
-      fly(p);
-    };
-
-    let top = 0;
-    let travel = 1;
-    let sceneEnd = 0;
-    let current = 0;
-    let target = 0;
-    let running = false;
-    let lastTime = 0;
-    const progressAt = (y) => clamp((y - top) / travel, 0, 1);
-
-    /* Amorti : à chaque image, la progression rattrape une part de l'écart avec le défilement */
-    const step = (time) => {
-      const dt = clamp(time - lastTime, 1, 64);
-      lastTime = time;
-      current += (target - current) * (1 - Math.exp(-dt / SMOOTHING));
-      if (Math.abs(target - current) < 0.0004) {
-        current = target;
-        running = false;
-      }
-      draw(current);
-      if (running) requestAnimationFrame(step);
-    };
+    const STATE = { closed: 0, moving: 1, open: 2 };
+    let state = STATE.closed;
+    let rebuildLater = false;
 
     /* Les mesures ne se font qu'ici, jamais pendant l'animation */
-    const measure = () => {
+    const build = () => {
       if (!scenePinned) return;
-      top = scene.getBoundingClientRect().top + scrollY;
-      travel = stage.offsetHeight * TRAVEL;
-      sceneEnd = top + scene.offsetHeight - stage.offsetHeight;
-      duo.style.transform = "none";
-      lines.forEach((line) => (line.style.transform = "none"));
-      flights = lines.map((line, i) => {
+      if (state === STATE.moving) {
+        rebuildLater = true;
+        return;
+      }
+      tracks.forEach((a) => a.cancel());
+      tracks = [];
+      const flights = lines.map((line, i) => {
         const from = line.getBoundingClientRect();
         const to = words[i].getBoundingClientRect();
         return {
@@ -489,13 +432,174 @@
           scale: parseFloat(getComputedStyle(words[i]).fontSize) / parseFloat(getComputedStyle(line).fontSize),
         };
       });
-      written.clear();
-      target = current = progressAt(scrollY);
-      root.classList.toggle("in-scene", scrollY < sceneEnd);
-      draw(current);
+      // Panneaux côte à côte : la seconde moitié glisse d'abord de côté en rétrécissant, puis les deux descendent.
+      // Elles suivent ainsi un arc, restent dans l'écran et ne se chevauchent jamais.
+      const sideBySide = flights.some((f) => Math.abs(f.dx) > 120);
+      flights.forEach((f, i) =>
+        track(f.line, (p) => {
+          const x = sideBySide ? inOut(seg(p, 0.05, 0.58)) : 1;
+          const y = inOut(sideBySide ? seg(p, 0.36 + i * 0.04, LAND) : seg(p, 0.04 + i * 0.03, LAND));
+          const s = 1 + (f.scale - 1) * (sideBySide ? x : y);
+          return { transform: `translate3d(${(f.dx * x).toFixed(2)}px, ${(f.dy * y).toFixed(2)}px, 0) scale(${s.toFixed(4)})` };
+        })
+      );
+      swap(title, 1, 0);
+      headings.forEach((h) => swap(h, 0, 1));
+      fading.forEach((el) =>
+        track(el, (p) => ({ opacity: 1 - seg(p, 0, 0.14), transform: `translate3d(0, ${(-36 * seg(p, 0, 0.16)).toFixed(1)}px, 0)` }))
+      );
+      track(left.el, (p) => ({ transform: `rotateY(${(-doorAngle(p)).toFixed(2)}deg)` }));
+      track(right.el, (p) => ({ transform: `rotateY(${doorAngle(p).toFixed(2)}deg)` }));
+      const shade = (p) => ({ opacity: Math.sin(Math.min(doorAngle(p), 90) * RAD) });
+      track(left.shade, shade);
+      track(right.shade, shade);
+      track(duo, (p) => ({ transform: `scale(${(0.94 + 0.06 * smooth(seg(p, 0.08, 0.72))).toFixed(4)})` }));
+      track(veil, (p) => ({ opacity: 0.72 * (1 - smooth(seg(p, 0.2, 0.9))) }));
+      revealing.forEach((el) =>
+        track(el, (p) => {
+          const shown = seg(p, 0.76, 0.99);
+          return { opacity: shown, transform: `translate3d(0, ${(22 * (1 - shown)).toFixed(1)}px, 0)` };
+        })
+      );
+      const time = state === STATE.open ? OPEN_MS : 0;
+      tracks.forEach((a) => {
+        a.pause();
+        a.currentTime = time;
+      });
     };
 
-    const animated = () => [...lines, ...fading, ...revealing, duo];
+    /* Fin d'une ouverture ou d'une fermeture : le défilement reprend la main */
+    let settleUntil = 0;
+    const settle = (opened) => {
+      state = opened ? STATE.open : STATE.closed;
+      settleUntil = performance.now() + 700;
+      root.classList.remove("scene-moving");
+      scene.classList.toggle("is-landed", opened);
+      if (!opened) {
+        scene.classList.remove("is-open");
+        hero.dispatchEvent(new CustomEvent("scene:covered", { detail: false }));
+      }
+      syncWatch();
+      if (rebuildLater) {
+        rebuildLater = false;
+        build();
+      }
+    };
+    const play = (opening) => {
+      state = STATE.moving;
+      root.classList.add("scene-moving");
+      tracks[0].onfinish = () => settle(opening);
+      tracks.forEach((a) => {
+        a.playbackRate = opening ? 1 : -OPEN_MS / CLOSE_MS;
+        a.play();
+      });
+    };
+    const open = () => {
+      if (state !== STATE.closed) return;
+      copyPhoto();
+      scene.classList.add("is-open");
+      hero.dispatchEvent(new CustomEvent("scene:covered", { detail: true }));
+      play(true);
+    };
+    const close = () => {
+      if (state !== STATE.open) return;
+      copyPhoto();
+      scene.classList.remove("is-landed");
+      play(false);
+    };
+    /* Page déjà descendue (rechargement, ancre) : les panneaux sont là, sans animation */
+    const openAtOnce = () => {
+      if (state === STATE.open) return;
+      copyPhoto();
+      scene.classList.add("is-open");
+      hero.dispatchEvent(new CustomEvent("scene:covered", { detail: true }));
+      tracks.forEach((a) => {
+        a.onfinish = null;
+        a.pause();
+        a.currentTime = OPEN_MS;
+      });
+      settle(true);
+    };
+
+    /* Gestes : tant que les panneaux ne sont pas ouverts, ils déclenchent l'animation au lieu de faire défiler */
+    const busy = () => root.classList.contains("menu-open");
+    let lastY = scrollY;
+    let lastScrollAt = 0;
+    let lastWheelAt = 0;
+    let wheelSum = 0;
+    const onWheel = (e) => {
+      if (e.ctrlKey || busy() || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const now = performance.now();
+      const gap = now - lastWheelAt;
+      lastWheelAt = now;
+      if (state === STATE.moving) {
+        e.preventDefault();
+      } else if (state === STATE.closed) {
+        if (e.deltaY <= 0) return;
+        e.preventDefault();
+        // un cran de molette suffit ; sur un pavé tactile, on ignore un effleurement
+        wheelSum = gap > 200 ? e.deltaY : wheelSum + e.deltaY;
+        if (wheelSum >= 6 || e.deltaMode !== 0) {
+          wheelSum = 0;
+          open();
+        }
+      } else if (now < settleUntil && gap < 140) {
+        e.preventDefault(); // fin de l'élan du geste précédent : on ne le compte pas
+      } else if (e.deltaY < 0 && scrollY <= 0 && now - lastScrollAt > 220) {
+        e.preventDefault();
+        close();
+      }
+    };
+    let touchY = null;
+    const onTouchStart = (e) => {
+      touchY = e.touches.length === 1 && !busy() ? e.touches[0].clientY : null;
+    };
+    const onTouchMove = (e) => {
+      if (touchY === null || e.touches.length !== 1) return;
+      const dy = touchY - e.touches[0].clientY; // positif : le doigt monte, la page descendrait
+      const stop = () => e.cancelable && e.preventDefault();
+      if (state === STATE.moving) {
+        stop();
+      } else if (state === STATE.closed) {
+        if (dy <= 0) return; // tirer vers le bas en haut de page reste possible (actualiser)
+        stop();
+        if (dy > 12) open();
+      } else if (dy < 0 && scrollY <= 0) {
+        stop();
+        if (dy < -24) close();
+      }
+    };
+    const onKey = (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || busy()) return;
+      const isSpace = e.key === " " && !e.target.closest?.("a, button, input, select, textarea, summary");
+      const down = e.key === "ArrowDown" || e.key === "PageDown" || (isSpace && !e.shiftKey);
+      const up = e.key === "ArrowUp" || e.key === "PageUp" || (isSpace && e.shiftKey);
+      if (!down && !up) return;
+      if (state === STATE.moving) {
+        e.preventDefault();
+      } else if (state === STATE.closed && down) {
+        e.preventDefault();
+        open();
+      } else if (state === STATE.open && up && scrollY <= 0) {
+        e.preventDefault();
+        close();
+      }
+    };
+    /* Ces écouteurs bloquent le défilement : présents seulement quand ils peuvent servir */
+    let watching = false;
+    const watch = (on) => {
+      if (on === watching) return;
+      watching = on;
+      const method = on ? "addEventListener" : "removeEventListener";
+      window[method]("wheel", onWheel, { passive: false });
+      window[method]("touchstart", onTouchStart, { passive: true });
+      window[method]("touchmove", onTouchMove, { passive: false });
+      window[method]("keydown", onKey);
+    };
+    function syncWatch() {
+      watch(scenePinned && (state !== STATE.open || scrollY <= 0));
+    }
+
     const pin = () => {
       scenePinned = true;
       scene.classList.add("scene--pinned");
@@ -503,33 +607,38 @@
       $(".hero__inner", hero)?.removeAttribute("style");
       hero.after(doors);
       duo.after(veil);
-      measure();
-      if (location.hash === "#univers") scrollTo({ top: top + travel, behavior: "auto" });
+      build();
+      syncWatch();
+      if (scrollY > 0 || location.hash === "#univers") openAtOnce();
     };
     const unpin = () => {
       scenePinned = false;
-      setOpen(false);
-      running = false;
-      scene.classList.remove("scene--pinned", "is-past-intro", "is-landed");
-      root.classList.remove("in-scene");
+      tracks.forEach((a) => a.cancel());
+      tracks = [];
+      if (state !== STATE.closed) hero.dispatchEvent(new CustomEvent("scene:covered", { detail: false }));
+      state = STATE.closed;
+      rebuildLater = false;
+      root.classList.remove("scene-moving");
+      scene.classList.remove("scene--pinned", "is-open", "is-landed");
       doors.remove();
       veil.remove();
-      animated().forEach((el) => el.removeAttribute("style"));
-      written.clear();
+      watch(false);
     };
 
     const tall = matchMedia("(min-height: 620px)");
     tall.addEventListener("change", () => (tall.matches ? pin() : unpin()));
     if (tall.matches) pin();
 
+    /* Défilement sans geste intercepté (barre de défilement, touche Fin, recherche dans la page) */
     scrollSubs.add((y) => {
       if (!scenePinned) return;
-      root.classList.toggle("in-scene", y < sceneEnd);
-      target = progressAt(y);
-      if (target === current || running) return;
-      running = true;
-      lastTime = performance.now();
-      requestAnimationFrame(step);
+      if (y !== lastY) {
+        lastY = y;
+        lastScrollAt = performance.now();
+      }
+      if (y > innerHeight * 0.5 && state !== STATE.open) openAtOnce();
+      else if (y > 0 && state === STATE.closed) open();
+      syncWatch();
     });
 
     /* La barre d'adresse des téléphones change la hauteur en défilant : pas de nouvelle mesure pour si peu */
@@ -541,14 +650,14 @@
         if (innerWidth === lastW && Math.abs(innerHeight - lastH) < 140) return;
         lastW = innerWidth;
         lastH = innerHeight;
-        measure();
+        build();
       },
       { passive: true }
     );
-    document.fonts?.ready.then(measure);
-    /* Photos prêtes avant le premier défilement, pour ne rien décoder pendant l'ouverture */
+    document.fonts?.ready.then(build);
+    /* Photos prêtes avant le premier geste, pour ne rien décoder pendant l'ouverture */
     const prepare = () => {
-      measure();
+      build();
       syncDoors();
       $$(".duo__media img", duo).forEach((img) => {
         img.loading = "eager";
@@ -558,18 +667,18 @@
     if (document.readyState === "complete") prepare();
     else addEventListener("load", prepare, { once: true });
     hero.addEventListener("hero:slide", () => {
-      if (!opened) syncDoors();
+      if (state === STATE.closed) syncDoors();
     });
 
-    /* « Défiler » amène à la fin de l'animation */
+    /* « Défiler » lance l'ouverture */
     $(".scroll-cue", hero)?.addEventListener("click", (e) => {
       if (!scenePinned) return;
       e.preventDefault();
-      scrollTo({ top: top + travel, behavior: "smooth" });
+      open();
     });
     /* Au clavier : un lien de panneau qui reçoit le focus est toujours visible */
     duo.addEventListener("focusin", () => {
-      if (scenePinned && current < 0.98) scrollTo({ top: top + travel, behavior: "smooth" });
+      if (scenePinned) open();
     });
   }
 
