@@ -397,22 +397,45 @@
       right.img.style.transform = zoom;
     };
 
-    /* Une piste par élément : chaque courbe est calculée à l'avance, puis jouée par le navigateur */
+    /* Une courbe par élément (images clés de l'ouverture), calculée à l'avance puis jouée par le navigateur.
+       La fermeture rejoue les mêmes images clés dans l'ordre inverse, avec de nouvelles animations jouées
+       vers l'avant : jouée à rebours (vitesse négative), une animation accélérée s'affiche mal dans Chrome
+       (le hero de départ apparaît d'un coup, puis les panneaux, puis la page sans transition). */
+    let curves = [];
     let tracks = [];
-    const track = (el, at) =>
-      tracks.push(el.animate(Array.from({ length: SAMPLES + 1 }, (_, i) => ({ offset: i / SAMPLES, ...at(i / SAMPLES) })), { duration: OPEN_MS, fill: "both" }));
+    const track = (el, at) => curves.push([el, Array.from({ length: SAMPLES + 1 }, (_, i) => ({ offset: i / SAMPLES, ...at(i / SAMPLES) }))]);
     const swap = (el, from, to) =>
-      tracks.push(
-        el.animate(
-          [
-            { offset: 0, opacity: from },
-            { offset: LAND, opacity: from },
-            { offset: LAND, opacity: to },
-            { offset: 1, opacity: to },
-          ],
-          { duration: OPEN_MS, fill: "both" }
-        )
-      );
+      curves.push([
+        el,
+        [
+          { offset: 0, opacity: from },
+          { offset: LAND, opacity: from },
+          { offset: LAND, opacity: to },
+          { offset: 1, opacity: to },
+        ],
+      ]);
+    const backwards = (frames) => frames.map((k) => ({ ...k, offset: 1 - k.offset })).reverse();
+    const stop = () => {
+      tracks.forEach((a) => {
+        a.onfinish = null;
+        a.cancel();
+      });
+      tracks = [];
+    };
+    /* Les nouvelles animations partent exactement de l'état affiché : créées avant d'annuler les anciennes,
+       dans la même tâche, l'écran ne voit jamais d'élément sans animation */
+    const run = (opening, duration) => {
+      const next = curves.map(([el, frames]) => el.animate(opening ? frames : backwards(frames), { duration, fill: "both" }));
+      stop();
+      tracks = next;
+    };
+    const rest = (opened) => {
+      run(true, OPEN_MS);
+      tracks.forEach((a) => {
+        a.pause();
+        a.currentTime = opened ? OPEN_MS : 0;
+      });
+    };
     // Part de la largeur d'un volet déjà glissée vers son côté (de 0 à 100 %)
     const slide = (p) => 100 * inOut(seg(p, 0.08, 0.86));
 
@@ -427,8 +450,8 @@
         rebuildLater = true;
         return;
       }
-      tracks.forEach((a) => a.cancel());
-      tracks = [];
+      stop(); // la phrase revient à sa place pour être mesurée
+      curves = [];
       const flights = lines.map((line, i) => {
         const from = line.getBoundingClientRect();
         const to = words[i].getBoundingClientRect();
@@ -464,11 +487,7 @@
           return { opacity: shown, transform: `translate3d(0, ${(22 * (1 - shown)).toFixed(1)}px, 0)` };
         })
       );
-      const time = state === STATE.open ? OPEN_MS : 0;
-      tracks.forEach((a) => {
-        a.pause();
-        a.currentTime = time;
-      });
+      rest(state === STATE.open);
     };
 
     /* Fin d'une ouverture ou d'une fermeture : le défilement reprend la main */
@@ -491,14 +510,8 @@
     const play = (opening) => {
       state = STATE.moving;
       root.classList.add("scene-moving");
-      // On ne conclut qu'en bout de course dans le sens joué : un événement « finish » en retard
-      // (d'un mouvement précédent) ne doit pas faire réapparaître la photo au milieu de la fermeture
-      const end = opening ? OPEN_MS : 0;
-      tracks[0].onfinish = () => Math.abs(tracks[0].currentTime - end) < 1 && settle(opening);
-      tracks.forEach((a) => {
-        a.playbackRate = opening ? 1 : -OPEN_MS / CLOSE_MS;
-        a.play();
-      });
+      run(opening, opening ? OPEN_MS : CLOSE_MS);
+      tracks[0].onfinish = () => settle(opening);
     };
     const open = () => {
       if (state !== STATE.closed) return;
@@ -528,11 +541,7 @@
       copyPhoto();
       scene.classList.add("is-open");
       hero.dispatchEvent(new CustomEvent("scene:covered", { detail: true }));
-      tracks.forEach((a) => {
-        a.onfinish = null;
-        a.pause();
-        a.currentTime = OPEN_MS;
-      });
+      rest(true);
       settle(true);
     };
 
@@ -642,8 +651,7 @@
     };
     const unpin = () => {
       scenePinned = false;
-      tracks.forEach((a) => a.cancel());
-      tracks = [];
+      stop();
       if (state !== STATE.closed) hero.dispatchEvent(new CustomEvent("scene:covered", { detail: false }));
       state = STATE.closed;
       rebuildLater = false;
