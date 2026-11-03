@@ -323,10 +323,11 @@
     schedule(DURATION);
   }
 
-  /* ---------- Accueil : le hero s'ouvre en deux volets, la phrase rejoint les deux panneaux ----------
+  /* ---------- Accueil : le hero s'ouvre depuis le milieu, la phrase rejoint les deux panneaux ----------
      Le défilement ne fait que déclencher l'animation : elle dure toujours le même temps, qu'on défile
      vite ou lentement, et la page ne bouge pas pendant qu'elle se joue. Ensuite, le défilement reprend
-     normalement ; revenu tout en haut de la page, un geste vers le haut referme les volets.
+     normalement ; revenu tout en haut de la page, un geste vers le haut referme le hero.
+     Ouverture à plat : la photo se sépare au milieu et ses deux moitiés glissent vers les côtés.
      Pour rester fluide : l'animation est confiée au navigateur (Web Animations, transform et opacity
      uniquement, sur des calques déjà prêts) et ne dépend pas du script pendant qu'elle se joue.
      Sans JS, avec « réduire les animations » ou sur un écran très bas : le hero, puis les panneaux. */
@@ -335,10 +336,9 @@
     if (!scene || reduceMotion() || !scene.animate) return;
     const OPEN_MS = 2600; // durée de l'ouverture, quelle que soit la vitesse du défilement
     const CLOSE_MS = 1700; // durée de la fermeture
-    const COLLAPSE_MS = 280; // un panneau élargi par le survol reprend sa place avant que les volets se referment
+    const COLLAPSE_MS = 280; // un panneau élargi par le survol reprend sa place avant que le hero se referme
     const LAND = 0.88; // la phrase est arrivée : les titres des panneaux prennent le relais
     const SAMPLES = 52; // points calculés sur chaque courbe
-    const RAD = Math.PI / 180;
     const seg = (p, a, b) => clamp((p - a) / (b - a), 0, 1);
     const smooth = (t) => t * t * (3 - 2 * t);
     const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (2 - 2 * t) ** 3 / 2);
@@ -364,9 +364,8 @@
       const img = new Image();
       img.alt = "";
       img.decoding = "async";
-      const shade = span("door__shade");
-      el.append(img, span("door__veil"), shade);
-      return { el, img, shade };
+      el.append(img, span("door__veil"));
+      return { el, img };
     };
     const left = makeDoor("l");
     const right = makeDoor("r");
@@ -414,7 +413,8 @@
           { duration: OPEN_MS, fill: "both" }
         )
       );
-    const doorAngle = (p) => 96 * inOut(seg(p, 0.08, 0.86));
+    // Part de la largeur d'un volet déjà glissée vers son côté (de 0 à 100 %)
+    const slide = (p) => 100 * inOut(seg(p, 0.08, 0.86));
 
     const STATE = { closed: 0, moving: 1, open: 2 };
     let state = STATE.closed;
@@ -455,12 +455,8 @@
       fading.forEach((el) =>
         track(el, (p) => ({ opacity: 1 - seg(p, 0, 0.14), transform: `translate3d(0, ${(-36 * seg(p, 0, 0.16)).toFixed(1)}px, 0)` }))
       );
-      track(left.el, (p) => ({ transform: `rotateY(${(-doorAngle(p)).toFixed(2)}deg)` }));
-      track(right.el, (p) => ({ transform: `rotateY(${doorAngle(p).toFixed(2)}deg)` }));
-      const shade = (p) => ({ opacity: Math.sin(Math.min(doorAngle(p), 90) * RAD) });
-      track(left.shade, shade);
-      track(right.shade, shade);
-      track(duo, (p) => ({ transform: `scale(${(0.94 + 0.06 * smooth(seg(p, 0.08, 0.72))).toFixed(4)})` }));
+      track(left.el, (p) => ({ transform: `translate3d(${(-slide(p)).toFixed(2)}%, 0, 0)` }));
+      track(right.el, (p) => ({ transform: `translate3d(${slide(p).toFixed(2)}%, 0, 0)` }));
       track(veil, (p) => ({ opacity: 0.72 * (1 - smooth(seg(p, 0.2, 0.9))) }));
       revealing.forEach((el) =>
         track(el, (p) => {
@@ -495,7 +491,10 @@
     const play = (opening) => {
       state = STATE.moving;
       root.classList.add("scene-moving");
-      tracks[0].onfinish = () => settle(opening);
+      // On ne conclut qu'en bout de course dans le sens joué : un événement « finish » en retard
+      // (d'un mouvement précédent) ne doit pas faire réapparaître la photo au milieu de la fermeture
+      const end = opening ? OPEN_MS : 0;
+      tracks[0].onfinish = () => Math.abs(tracks[0].currentTime - end) < 1 && settle(opening);
       tracks.forEach((a) => {
         a.playbackRate = opening ? 1 : -OPEN_MS / CLOSE_MS;
         a.play();
@@ -543,6 +542,20 @@
     let lastScrollAt = 0;
     let lastWheelAt = 0;
     let wheelSum = 0;
+    /* Un geste (molette, pavé tactile) ne referme le hero que s'il commence tout en haut de la page :
+       l'élan d'un défilement remonté depuis le bas ne le referme pas tout seul, comme au doigt.
+       Écouteur passif toujours actif, enregistré avant onWheel : il le précède sur chaque événement. */
+    let wheelSeenAt = 0;
+    let gestureFromTop = true;
+    addEventListener(
+      "wheel",
+      () => {
+        const now = performance.now();
+        if (now - wheelSeenAt > 200) gestureFromTop = scrollY <= 0;
+        wheelSeenAt = now;
+      },
+      { passive: true }
+    );
     const onWheel = (e) => {
       if (e.ctrlKey || busy() || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
       const now = performance.now();
@@ -561,7 +574,7 @@
         }
       } else if (now < settleUntil && gap < 140) {
         e.preventDefault(); // fin de l'élan du geste précédent : on ne le compte pas
-      } else if (e.deltaY < 0 && scrollY <= 0 && now - lastScrollAt > 220) {
+      } else if (e.deltaY < 0 && scrollY <= 0 && gestureFromTop && now - lastScrollAt > 220) {
         e.preventDefault();
         close();
       }

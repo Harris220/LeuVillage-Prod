@@ -2376,6 +2376,31 @@ strong {
 .space-card__media--trio > picture:first-child {
   grid-row: 1 / -1;
 }
+/* L'open space est une vraie photo : la mention chevauche les deux images d'illustration, jamais la photo */
+.space-card__media--trio .media-note {
+  right: calc(100% / 2.4 / 2);
+  bottom: 50%;
+  left: auto;
+  white-space: nowrap;
+  transform: translate(50%, 50%);
+}
+/* Sur téléphone, la photo sur toute la largeur et les deux illustrations dessous */
+@media (max-width: 759px) {
+  .space-card__media--trio {
+    aspect-ratio: 1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  .space-card__media--trio > picture:first-child {
+    grid-row: auto;
+    grid-column: 1 / -1;
+  }
+  .space-card__media--trio .media-note {
+    right: 50%;
+    bottom: 0.75rem;
+    transform: translateX(50%);
+  }
+}
 /* Formules : « sur mesure » sur toute la largeur des cartes, en version compacte */
 .formula-custom {
   display: grid;
@@ -3933,14 +3958,12 @@ html.scene-moving .site-header__bar {
   backdrop-filter: none;
 }
 
-/* Les deux volets : copies de la photo du hero, qui pivotent vers le visiteur sur leurs gonds */
+/* Les deux volets : copies de la photo du hero, qui glissent à plat vers les côtés à partir du milieu */
 .doors {
   position: absolute;
   inset: 0;
   z-index: 2;
   overflow: hidden;
-  perspective: max(1100px, 165vw);
-  perspective-origin: 50% 46%;
   pointer-events: none;
 }
 .door {
@@ -3950,16 +3973,13 @@ html.scene-moving .site-header__bar {
   width: 50%;
   overflow: hidden;
   background: var(--night);
-  backface-visibility: hidden;
   will-change: transform;
 }
 .door--l {
   left: 0;
-  transform-origin: 0 50%;
 }
 .door--r {
   right: 0;
-  transform-origin: 100% 50%;
 }
 .door img,
 .door__veil {
@@ -3988,23 +4008,13 @@ html.scene-moving .site-header__bar {
     linear-gradient(0deg, rgb(24 15 9 / 0.86) 0%, rgb(24 15 9 / 0.5) 34%, rgb(24 15 9 / 0) 64%),
     radial-gradient(120% 70% at 12% 92%, rgb(24 15 9 / 0.55) 0%, rgb(24 15 9 / 0) 60%);
 }
-/* Le battant s'assombrit en tournant, plus fort côté gond */
-.door__shade {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  will-change: opacity;
-}
-.door--l .door__shade {
-  background: linear-gradient(90deg, rgb(12 7 4 / 0.82), rgb(12 7 4 / 0.34));
-}
-.door--r .door__shade {
-  background: linear-gradient(270deg, rgb(12 7 4 / 0.82), rgb(12 7 4 / 0.34));
-}
 
-/* Les deux panneaux : mêmes dimensions, visibilité égale, entièrement cliquables */
+/* Les deux panneaux : mêmes dimensions, visibilité égale, entièrement cliquables.
+   Une fine bande sombre les sépare (le fond du duo, entre les deux photos) : c'est elle qui apparaît
+   en premier quand le hero s'ouvre par le milieu. */
 .duo {
   display: flex;
+  gap: 6px;
   min-height: 100svh;
   background: var(--night);
 }
@@ -4013,7 +4023,6 @@ html.scene-moving .site-header__bar {
   inset: 0;
   z-index: 1;
   min-height: 0;
-  will-change: transform;
 }
 .scene--pinned:not(.is-landed) .duo {
   pointer-events: none;
@@ -4040,9 +4049,6 @@ html.scene-moving .site-header__bar {
   color: #fff;
   cursor: pointer;
   transition: flex-grow 0.9s var(--ease-out);
-}
-.duo__panel + .duo__panel {
-  border-left: 1px solid rgb(255 255 255 / 0.22);
 }
 .duo__media {
   position: absolute;
@@ -4191,14 +4197,6 @@ html.scene-moving .site-header__bar {
   width: 16px;
   height: 16px;
 }
-.duo__panel .media-note {
-  right: 0.9rem;
-  bottom: 0.9rem;
-  left: auto;
-}
-.scene--pinned .duo__panel .media-note {
-  bottom: calc(0.9rem + 100vh - 100svh);
-}
 /* Le bouton visuel réagit au survol de tout le panneau (seulement panneaux ouverts) */
 :is(.scene:not(.scene--pinned), .is-landed) .duo__panel:hover .btn--primary {
   background: var(--coral-700);
@@ -4253,10 +4251,6 @@ html.scene-moving .site-header__bar {
   .scene--pinned .duo__panel {
     min-height: 0;
   }
-  .duo__panel + .duo__panel {
-    border-top: 1px solid rgb(255 255 255 / 0.22);
-    border-left: 0;
-  }
   .duo__media img {
     left: 0;
     width: 100%;
@@ -4279,11 +4273,6 @@ html.scene-moving .site-header__bar {
   }
   .scene--pinned .duo__panel:last-child .duo__body {
     padding-bottom: calc(1.1rem + 100vh - 100svh);
-  }
-  .duo__panel:not(:last-child) .media-note,
-  .scene--pinned .duo__panel:not(:last-child) .media-note {
-    top: calc(var(--header-top) + var(--header-h) + 0.6rem);
-    bottom: auto;
   }
 }
 /* Après la scène : le bandeau Événements */
