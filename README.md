@@ -92,7 +92,6 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains
 
 ## Contenus à valider
 
-- **Photos du coworking et de la salle** : images d'illustration (générées, mention affichée sur le site) à remplacer par de vraies photos. Garder les mêmes noms de fichiers et largeurs (480, 800, 1024 px) en AVIF et WebP.
 - **Adresse** : le site affiche « Pointe des Châteaux, 97436 Saint-Leu » (livret Leu Village) ; leuboucan.re indique « 5 Avenue des Artisans, 97416 ST LEU ».
 - **Tarifs Leu Boucan** : prix « à partir de » relevés sur leuboucan.re, à tenir à jour.
 - **Horaires** : l'indication « Ouvert maintenant » est calculée à partir de 7h–18h du lundi au vendredi (heure de La Réunion) et ne tient pas compte des jours fériés ni des fermetures.

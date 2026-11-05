@@ -2123,18 +2123,15 @@ strong {
   height: 100%;
   object-fit: cover;
 }
-.cta-card__note .media-note {
-  left: auto;
-  right: 1rem;
-  top: 1rem;
-  bottom: auto;
-}
 .cta-card::after {
+  --cta-text: calc(clamp(1.75rem, 1rem + 4vw, 5rem) + 760px);
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
+  /* Le premier voile suit la largeur du texte : il reste lisible sur les zones claires de la photo */
   background:
+    linear-gradient(90deg, rgb(24 15 9 / 0.42) var(--cta-text), transparent calc(var(--cta-text) + 24vw)),
     linear-gradient(0deg, rgb(24 15 9 / 0.82) 0%, rgb(24 15 9 / 0.35) 55%, rgb(24 15 9 / 0.15) 100%),
     radial-gradient(90% 80% at 0% 100%, rgb(24 15 9 / 0.5), transparent 70%);
 }
@@ -2376,15 +2373,7 @@ strong {
 .space-card__media--trio > picture:first-child {
   grid-row: 1 / -1;
 }
-/* L'open space est une vraie photo : la mention chevauche les deux images d'illustration, jamais la photo */
-.space-card__media--trio .media-note {
-  right: calc(100% / 2.4 / 2);
-  bottom: 50%;
-  left: auto;
-  white-space: nowrap;
-  transform: translate(50%, 50%);
-}
-/* Sur téléphone, la photo sur toute la largeur et les deux illustrations dessous */
+/* Sur téléphone, l'open space sur toute la largeur, la salle et la terrasse dessous */
 @media (max-width: 759px) {
   .space-card__media--trio {
     aspect-ratio: 1;
@@ -2394,11 +2383,6 @@ strong {
   .space-card__media--trio > picture:first-child {
     grid-row: auto;
     grid-column: 1 / -1;
-  }
-  .space-card__media--trio .media-note {
-    right: 50%;
-    bottom: 0.75rem;
-    transform: translateX(50%);
   }
 }
 /* Formules : « sur mesure » sur toute la largeur des cartes, en version compacte */
@@ -4279,29 +4263,6 @@ html.scene-moving .site-header__bar {
 .scene-after {
   padding-top: clamp(2rem, 1.5rem + 2vw, 3.5rem);
   padding-bottom: 0;
-}
-
-/* Mention « image d'illustration » (visuels qui ne sont pas des photos du lieu) */
-.media-note {
-  position: absolute;
-  left: 0.75rem;
-  bottom: 0.75rem;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
-  border-radius: var(--r-pill);
-  background: rgb(30 20 14 / 0.6);
-  color: #fff;
-  font-size: var(--fs-2xs);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  pointer-events: none;
-}
-.media-note .icon {
-  width: 13px;
-  height: 13px;
 }
 
 /* ---------- Accueil : présentation & contact ---------- */
